@@ -9,6 +9,7 @@ const SCREEN_HEIGHT = window.innerHeight;
 const gravityPull = 20;
 let hue = 0;
 let playerActivated = false;
+let gameFrame = 0;
 
 const snow = {
   snowArray: [],
@@ -30,32 +31,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
     bg.height = SCREEN_HEIGHT;
   });
 
-  //* Mouse Movements
-
-  const mouse = {
-    x: undefined,
-    y: undefined,
-  };
-
-  //* passes mouse click coordinates to global variable
-  canvas.addEventListener("mousemove", (event) => {
-    mouse.x = event.x;
-    mouse.y = event.y;
-  });
-
-  canvas.addEventListener("click", (event) => {
-    playerActivated = true;
-    player.speedY = -0.5;
-
-    console.log("let's go!");
-    canvas.addEventListener.off();
-  });
-
   class Snow {
     constructor() {
-      this.x = Math.random() * bg.width;
-      this.y = Math.random() * gravityPull + 1;
-      this.size = Math.random() * snow.snowSize + 1;
+      this.x = Math.floor(Math.random() * bg.width);
+      this.y = Math.floor((Math.random() * gravityPull) / 2) + 1;
+      this.size = Math.floor(Math.random() * snow.snowSize) + 1;
       this.speedX = Math.random() * 3 - 1.5; //* create -ve and +ve vector
       this.speedY = Math.random() * 2 + 0.5;
       this.color = `hsl(${hue}, 100%, 50%)`;
@@ -78,15 +58,17 @@ document.addEventListener("DOMContentLoaded", function (event) {
     constructor() {
       this.width = 20;
       this.height = 20;
-      this.x = 100;
-      this.y = 100;
+      this.x = canvas.width / 2;
+      this.y = canvas.height / 2;
       this.speedX = 10;
       this.speedY = 5;
+      this.frame = 0;
     }
     update() {
-      if (!playerActivated) return;
+      if (!playerActivated) return; //* prevent left right movement till screen is clicked.
 
-      let dx = Math.round((mouse.x - this.x) / 8);
+      //? trying this method to "calibrate mouse move to x move"
+      let dx = Math.floor((mouse.x - this.x) / 8);
       console.log(dx);
 
       //* scale down dx
@@ -110,15 +92,29 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 
+  //* Mouse Movements
+
+  const mouse = {
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+  };
+
+  //* passes mouse click coordinates to global variable
+  canvas.addEventListener("mousemove", (event) => {
+    mouse.x = event.x;
+    mouse.y = event.y;
+  });
+
   const player = new Player();
   console.log("🚀 ~ file: app.js ~ line 92 ~ player", player);
 
   //* Generate snow
   const init = () => {
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 50; i++) {
       snow.snowArray.push(new Snow());
     }
   };
+
   init();
 
   const handleSnow = (arr) => {
@@ -127,6 +123,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
       arr[i].draw();
     }
   };
+
+  canvas.addEventListener("click", (event) => {
+    playerActivated = true;
+    playerJump();
+
+    console.log("let's go!");
+    canvas.addEventListener.off();
+  });
 
   //* Animate / Game loop
 
@@ -137,10 +141,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
     bgCtx.fillStyle = "rgba(0,0,0,0.1)"; // rectangle that covers screen over and over
 
     handleSnow(snow.snowArray);
-    // renderPlayer(player);
     player.update();
     player.draw();
     hue += 2;
+    gameFrame++;
+
+    if (gameFrame % 200 === 0) init();
 
     requestAnimationFrame(gameLoop);
   };
