@@ -1,5 +1,5 @@
 # project-1
-Winterbells - a Tribute to Adobe Flash
+## Winterbells - a Tribute to Adobe Flash
 
 Welcome to my game project as part of SEI-30. You can view my pre-project work here: https://docs.google.com/document/d/1FPpK08GfnCg-nzXYBe4s_IeFqKawccZENnjvBIqs-nE/edit?usp=sharing
 
