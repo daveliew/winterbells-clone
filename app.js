@@ -105,25 +105,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
     mouse.y = event.y;
   });
 
-  const player = new Player();
-  console.log("🚀 ~ file: app.js ~ line 92 ~ player", player);
-
-  //* Generate snow
-  const init = () => {
-    for (let i = 0; i < 50; i++) {
-      snow.snowArray.push(new Snow());
-    }
-  };
-
-  init();
-
-  const handleSnow = (arr) => {
-    for (let i = 0; i < arr.length; i++) {
-      arr[i].update();
-      arr[i].draw();
-    }
-  };
-
   canvas.addEventListener("click", (event) => {
     playerActivated = true;
     playerJump();
@@ -132,23 +113,44 @@ document.addEventListener("DOMContentLoaded", function (event) {
     canvas.addEventListener.off();
   });
 
+  //* Generate snow
+  const generateSnow = () => {
+    for (let i = 0; i < 30; i++) {
+      snow.snowArray.push(new Snow());
+    }
+  };
+
+  const snowRender = (arr) => {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i].update();
+      arr[i].draw();
+    }
+  };
+
   //* Animate / Game loop
+  const player = new Player();
+  console.log("🚀 ~ file: app.js ~ line 92 ~ player", player);
+
+  generateSnow();
 
   const gameLoop = () => {
+    //* player code
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    bgCtx.clearRect(0, 0, bg.width, bg.height);
-    bgCtx.fillStyle = "rgba(0,0,0,0.1)"; // rectangle that covers screen over and over
-
-    handleSnow(snow.snowArray);
     player.update();
     player.draw();
+
+    //* snow code
+    bgCtx.clearRect(0, 0, bg.width, bg.height);
+    bgCtx.fillStyle = "rgba(0,0,0,0.1)"; // rectangle that covers screen over and over
+    snowRender(snow.snowArray);
+    if (gameFrame % 200 === 0) {
+      generateSnow();
+    }
+    //* Incrementors
     hue += 2;
     gameFrame++;
 
-    if (gameFrame % 200 === 0) init();
-
-    requestAnimationFrame(gameLoop);
+    requestAnimationFrame(gameLoop); // recursive game loop
   };
   gameLoop();
 });
