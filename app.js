@@ -6,15 +6,15 @@
 //! DATA
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
-const gravityPull = 20;
+const gravityPull = -0.7;
 let hue = 0;
 let playerActivated = false;
 let gameFrame = 0;
 
 const snow = {
   snowArray: [],
-  snowSize: 5,
-  snowAmt: 10,
+  size: 3,
+  amt: 15,
 };
 
 //! MAIN
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     constructor() {
       this.x = Math.floor(Math.random() * bg.width);
       this.y = Math.floor((Math.random() * gravityPull) / 2) + 1;
-      this.size = Math.floor(Math.random() * snow.snowSize) + 1;
+      this.size = Math.floor(Math.random() * snow.size) + 1;
       this.speedX = Math.random() * 3 - 1.5; //* create -ve and +ve vector
       this.speedY = Math.random() * 2 + 0.5;
       this.color = `hsl(${hue}, 100%, 50%)`;
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.width = 20;
       this.height = 20;
       this.x = canvas.width / 2;
-      this.y = canvas.height / 2;
+      this.y = canvas.height - this.height;
       this.speedX = 10;
       this.speedY = 5;
       this.frame = 0;
@@ -69,21 +69,23 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
       //? trying this method to "calibrate mouse move to x move"
       let dx = Math.floor((mouse.x - this.x) / 8);
-      console.log(dx);
 
       //* scale down dx
       if (dx > 8) {
         dx /= 8;
       }
-      console.log("adjusted", dx);
 
       this.x += dx;
+      player.y -= gravityPull;
 
       //*prevent player from leaving canvas
       if (this.x < 0) {
         this.x = 0;
       } else if (this.x + this.width > canvas.width) {
         this.x = canvas.width - this.width;
+      }
+      if (this.y > canvas.height - this.height) {
+        this.y = canvas.height - this.height;
       }
     }
     draw() {
@@ -105,17 +107,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
     mouse.y = event.y;
   });
 
-  canvas.addEventListener("click", (event) => {
+  //? fix this code
+  canvas.addEventListener("mousedown", (event) => {
     playerActivated = true;
-    playerJump();
+    player.y -= 50;
 
-    console.log("let's go!");
-    canvas.addEventListener.off();
+    console.log("mouse click detected");
+    //? find a way to remove mousedown after click
   });
 
   //* Generate snow
   const generateSnow = () => {
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < snow.amt; i++) {
       snow.snowArray.push(new Snow());
     }
   };
@@ -138,6 +141,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     player.update();
     player.draw();
+    player.speedY += 1.5; //? is this line useful?
 
     //* snow code
     bgCtx.clearRect(0, 0, bg.width, bg.height);
