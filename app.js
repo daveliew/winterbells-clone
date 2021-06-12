@@ -17,6 +17,7 @@ const gravityPull = -0.7;
 const numBells = 5;
 const bellSize = 10;
 const playerXAcceleration = 8;
+const difficulty = 3;
 let hue = 0;
 let playerActivated = false;
 let gameFrame = 0;
@@ -200,17 +201,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
   //* 3. Each new bell is no more than -2 to +2 x away from previous bell
   let prevR = 0;
   let currR = Math.floor(bellXpos.length / 2); //3, start at centre
-  console.log(prevR, currR);
+
   const generateX = () => {
     prevR = currR;
-    while (Math.abs(currR - prevR) <= 2 && currR === prevR) {
-      //? poslish up error - can get 3, 6... condition not working!
-      currR = Math.floor(Math.random() * bellXpos.length) + 1;
+    while (
+      currR === prevR || //prevents a random bell from having same X as a previous bell
+      currR - prevR <= -difficulty || //prevents a bell from being too far from a current bell
+      currR - prevR >= difficulty
+    ) {
+      currR = Math.floor(Math.random() * bellXpos.length);
     }
     return currR;
   };
-  generateX();
-  console.log(prevR, currR);
 
   const newBellCoord = {
     x: bellXpos[generateX()],
@@ -230,7 +232,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
   //* Animate / Game loop
   const player = new Player();
   console.log("🚀 ~ file: app.js ~ line 92 ~ player", player);
-
   generateSnow();
 
   const gameLoop = () => {
