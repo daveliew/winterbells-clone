@@ -1,11 +1,20 @@
+//! TO DO LIST
+//? bell generation algorithm
+//? collision detection
 //? add pre-rendering for main character
-//? use multiple frames
+//? fix game physics
+//? add music
+//? add sprites
+//? create max width and height
+//? multiple js files to better read code
+//? refactor code
 
 //! DATA
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
 const gravityPull = -0.7;
 const numBells = 5;
+const playerXAcceleration = 8;
 let hue = 0;
 let playerActivated = false;
 let gameFrame = 0;
@@ -87,14 +96,16 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.frame = 0;
     }
     update() {
-      if (!playerActivated) return; //* prevent left right movement till screen is clicked.
+      if (!playerActivated) {
+        return;
+      } //* prevent left right movement till screen is clicked.
 
       //? trying this method to "calibrate mouse move to x move"
-      let dx = Math.floor((mouse.x - this.x) / 8);
+      let dx = Math.floor((mouse.x - this.x) / playerXAcceleration);
 
       //* scale down dx
-      if (dx > 8) {
-        dx /= 8;
+      if (dx > playerXAcceleration) {
+        dx /= playerXAcceleration;
       }
 
       this.x += dx;
