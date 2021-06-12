@@ -1,6 +1,5 @@
 /** @type {HTMLCanvasElement} */
 //! TO DO LIST
-//? bell generation algorithm
 //? collision detection
 //? add pre-rendering for main character
 //? fix game physics
@@ -19,6 +18,17 @@ const numBells = 7; //? try to optimise this later
 const numBellCols = 7;
 const difficulty = 3;
 const playerXAcceleration = 8;
+const colWidth = Math.floor(SCREEN_WIDTH / numBellCols);
+const SCREEN_X_MID = Math.floor(SCREEN_WIDTH / 2);
+const bellXpos = [
+  SCREEN_X_MID - colWidth * 3,
+  SCREEN_X_MID - colWidth * 2,
+  SCREEN_X_MID - colWidth * 1,
+  SCREEN_X_MID,
+  SCREEN_X_MID + colWidth * 1,
+  SCREEN_X_MID + colWidth * 2,
+  SCREEN_X_MID + colWidth * 3,
+];
 let hue = 0;
 let playerActivated = false;
 let gameFrame = 0;
@@ -66,16 +76,47 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 
+  //* Generate snow
+  const generateSnow = () => {
+    for (let i = 0; i < snow.amt; i++) {
+      snow.snowArray.push(new Snow());
+    }
+  };
+
+  const snowRender = (arr) => {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i].update();
+      arr[i].draw();
+    }
+  };
+
+  //* Generate Bell
+
+  let prevR = 0;
+  let currR = Math.floor(bellXpos.length / 2); //3, start at centre
+
+  const randBellX = () => {
+    prevR = currR;
+    while (
+      currR === prevR || //prevents a random bell from having same X as a previous bell
+      currR - prevR <= -difficulty || //prevents a bell from being too far from a current bell
+      currR - prevR >= difficulty
+    ) {
+      currR = Math.floor(Math.random() * bellXpos.length);
+    }
+    return currR;
+  };
+
   class Bell {
     constructor() {
-      this.x = Math.random() * canvas.width;
+      this.x = bellXpos[randBellX()];
       this.y = 0;
       this.color = "white";
       this.size = bellSize;
     }
     update() {
-      this.x += Math.random() * 1 - 0.5;
-      this.y -= gravityPull; //? code looks suspect, revisit!
+      this.x += Math.random() - 0.5;
+      this.y -= gravityPull; //? code looks suspect, revisit
     }
     draw() {
       ctx.fillStyle = this.color;
@@ -85,6 +126,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
     hasCollided() {} //? add collision detection and add y velocity to player
   }
+
   //* Generate Player
   //? can we add friction to player?
   class Player {
@@ -152,61 +194,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     //? https://www.geeksforgeeks.org/javascript-removeeventlistener-method-with-examples/
   });
 
-  //* Generate snow
-  const generateSnow = () => {
-    for (let i = 0; i < snow.amt; i++) {
-      snow.snowArray.push(new Snow());
-    }
-  };
-
-  const snowRender = (arr) => {
-    for (let i = 0; i < arr.length; i++) {
-      arr[i].update();
-      arr[i].draw();
-    }
-  };
-
   //* Generate bell
-  // [ - - - - X - -] 5
-  // [ - - X - - - -] 4
-  // [ - X - - - - -] 3
-  // [ - - X - - - -] 2
-  // [ X - - - - - -] 1
-  //* 1. I will break the width into 7 columns
-  const colWidth = Math.floor(SCREEN_WIDTH / numBellCols);
-  const SCREEN_X_MID = Math.floor(SCREEN_WIDTH / 2);
-  const bellXpos = [
-    SCREEN_X_MID - colWidth * 3,
-    SCREEN_X_MID - colWidth * 2,
-    SCREEN_X_MID - colWidth * 1,
-    SCREEN_X_MID,
-    SCREEN_X_MID + colWidth * 1,
-    SCREEN_X_MID + colWidth * 2,
-    SCREEN_X_MID + colWidth * 3,
-  ];
-  //* 2. Bells should only be produced at a given y interval
-  //* 3. Each new bell is no more than -2 to +2 x away from previous bell
-
-  let prevR = 0;
-  let currR = Math.floor(bellXpos.length / 2); //3, start at centre
-
-  const randBellX = () => {
-    prevR = currR;
-    while (
-      currR === prevR || //prevents a random bell from having same X as a previous bell
-      currR - prevR <= -difficulty || //prevents a bell from being too far from a current bell
-      currR - prevR >= difficulty
-    ) {
-      currR = Math.floor(Math.random() * bellXpos.length);
-    }
-    return currR;
-  };
-
   const generateBell = () => {
     let bell = new Bell();
-    bell.x = bellXpos[randBellX()];
-    bell.y = 0 - bellSize;
-    console.log(bell);
     bellArray.push(bell);
   };
 
@@ -214,6 +204,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     for (let i = 0; i < arr.length; i++) {
       arr[i].update();
       arr[i].draw();
+      if (arr[i].y > canvas.height) {
+        arr.splice(i, 1);
+      }
     }
   };
 
@@ -229,10 +222,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
     player.draw();
 
     //* bell code
+    console.log(bellArray);
     bellRender(bellArray);
-    setTimeout(() => {
-      generateBell(), 10000;
-    });
+    if (gameFrame % 30 === 0) {
+      generateBell();
+    }
 
     //* snow code
     bgCtx.clearRect(0, 0, bg.width, bg.height);
