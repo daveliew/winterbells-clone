@@ -1,3 +1,4 @@
+/** @type {HTMLCanvasElement} */
 //! TO DO LIST
 //? bell generation algorithm
 //? collision detection
@@ -14,6 +15,7 @@ const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
 const gravityPull = -0.7;
 const numBells = 5;
+const bellSize = 10;
 const playerXAcceleration = 8;
 let hue = 0;
 let playerActivated = false;
@@ -66,10 +68,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
   class Bell {
     constructor() {
-      // const r = Math.floor(Math.random() * numBells); //?fix code
       this.x = Math.random() * canvas.width;
       this.y = 0;
       this.color = "white";
+      this.size = bellSize;
     }
     update() {
       this.x += Math.random() * 1 - 0.5;
@@ -78,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     draw() {
       ctx.fillStyle = this.color;
       ctx.beginPath(); //* like a paint path
-      ctx.arc(this.x, this.y, 10, 0, Math.PI * 2);
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI);
       ctx.fill();
     }
     hasCollided() {} //? add collision detection and add y velocity to player
@@ -171,29 +173,59 @@ document.addEventListener("DOMContentLoaded", function (event) {
       bellArray.push(new Bell());
     }
   };
+
   //? thoughts on bell generation
-  //* 1. I will break the width into 7 columns
-  //* 2. Bells should only be produced at a given y interval
-  //* 3. Each new bell is no more than -2 to +2 x away from previous bell
+
   // [ - - - - X - -] 5
   // [ - - X - - - -] 4
   // [ - X - - - - -] 3
   // [ - - X - - - -] 2
   // [ X - - - - - -] 1
+  //* 1. I will break the width into 7 columns
 
-  // const bellRender = (arr) => {
-  //   let counter = 0;
-  //   const interval = 10;
-  //   for (let i = 0; i < arr.length; i++) {
-  //     // if the switch to produce a bell is not on, I will wait an interval.
-  //     while (counter % interval !== 0) {
-  //       counter++;
-  //     }
-  //     arr[i].update();
-  //     arr[i].draw();
-  //     counter = 0;
-  //   }
-  // };
+  const colWidth = Math.floor(SCREEN_WIDTH / 7);
+  console.log("screen width", SCREEN_WIDTH);
+  const SCREEN_X_MID = Math.floor(SCREEN_WIDTH / 2);
+  const bellXpos = [
+    SCREEN_X_MID - colWidth * 3,
+    SCREEN_X_MID - colWidth * 2,
+    SCREEN_X_MID - colWidth * 1,
+    SCREEN_X_MID,
+    SCREEN_X_MID + colWidth * 1,
+    SCREEN_X_MID + colWidth * 2,
+    SCREEN_X_MID + colWidth * 3,
+  ];
+  console.log("🚀 ~ file: app.js ~ line 195 ~ bellXpos", bellXpos);
+  //* 2. Bells should only be produced at a given y interval
+  //* 3. Each new bell is no more than -2 to +2 x away from previous bell
+  let prevR = 0;
+  let currR = Math.floor(bellXpos.length / 2); //3, start at centre
+  console.log(prevR, currR);
+  const generateX = () => {
+    prevR = currR;
+    while (Math.abs(currR - prevR) <= 2 && currR === prevR) {
+      //? poslish up error - can get 3, 6... condition not working!
+      currR = Math.floor(Math.random() * bellXpos.length) + 1;
+    }
+    return currR;
+  };
+  generateX();
+  console.log(prevR, currR);
+
+  const newBellCoord = {
+    x: bellXpos[generateX()],
+    y: bellSize,
+  };
+
+  const bell1 = new Bell();
+  bell1.x = newBellCoord.x;
+  bell1.y = newBellCoord.y;
+  console.log(newBellCoord);
+
+  const bellRender = (bell) => {
+    bell.update();
+    bell.draw();
+  };
 
   //* Animate / Game loop
   const player = new Player();
@@ -208,6 +240,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     player.draw();
 
     //* bell code
+
+    bellRender(bell1);
     // bellRender(bellArray);
     // if (gameFrame % 300 === 0) {
     //   generateBell();
