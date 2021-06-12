@@ -1,8 +1,6 @@
 //? add pre-rendering for main character
 //? use multiple frames
 
-//* player character affected by jumping
-
 //! DATA
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
@@ -74,10 +72,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
       ctx.arc(this.x, this.y, 10, 0, Math.PI * 2);
       ctx.fill();
     }
-    hasCollided() {}
+    hasCollided() {} //? add collision detection and add y velocity to player
   }
   //* Generate Player
-
+  //? can we add friction to player?
   class Player {
     constructor() {
       this.width = 20;
@@ -100,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       }
 
       this.x += dx;
-      player.y -= gravityPull;
+      this.y -= gravityPull;
 
       //*prevent player from leaving canvas
       if (this.x < 0) {
@@ -137,7 +135,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     player.y -= 50;
 
     console.log("mouse click detected");
-    //? find a way to remove mousedown after click
+    //? find a way to remove mousedown after click so that player must use bells to jump
+    //? https://www.geeksforgeeks.org/javascript-removeeventlistener-method-with-examples/
   });
 
   //* Generate snow
@@ -161,13 +160,29 @@ document.addEventListener("DOMContentLoaded", function (event) {
       bellArray.push(new Bell());
     }
   };
+  //? thoughts on bell generation
+  //* 1. I will break the width into 7 columns
+  //* 2. Bells should only be produced at a given y interval
+  //* 3. Each new bell is no more than -2 to +2 x away from previous bell
+  // [ - - - - X - -] 5
+  // [ - - X - - - -] 4
+  // [ - X - - - - -] 3
+  // [ - - X - - - -] 2
+  // [ X - - - - - -] 1
 
-  const bellRender = (arr) => {
-    for (let i = 0; i < arr.length; i++) {
-      arr[i].update();
-      arr[i].draw();
-    }
-  };
+  // const bellRender = (arr) => {
+  //   let counter = 0;
+  //   const interval = 10;
+  //   for (let i = 0; i < arr.length; i++) {
+  //     // if the switch to produce a bell is not on, I will wait an interval.
+  //     while (counter % interval !== 0) {
+  //       counter++;
+  //     }
+  //     arr[i].update();
+  //     arr[i].draw();
+  //     counter = 0;
+  //   }
+  // };
 
   //* Animate / Game loop
   const player = new Player();
@@ -180,13 +195,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     player.update();
     player.draw();
-    player.speedY += 1.5;
 
     //* bell code
-    bellRender(bellArray);
-    if (gameFrame % 300 === 0) {
-      generateBell();
-    }
+    // bellRender(bellArray);
+    // if (gameFrame % 300 === 0) {
+    //   generateBell();
+    // }
 
     //* snow code
     bgCtx.clearRect(0, 0, bg.width, bg.height);
