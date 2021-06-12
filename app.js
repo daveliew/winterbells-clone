@@ -14,10 +14,11 @@
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
 const gravityPull = -0.7;
-const numBells = 5;
 const bellSize = 10;
-const playerXAcceleration = 8;
+const numBells = 7; //? try to optimise this later
+const numBellCols = 7;
 const difficulty = 3;
+const playerXAcceleration = 8;
 let hue = 0;
 let playerActivated = false;
 let gameFrame = 0;
@@ -64,8 +65,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
       bgCtx.fill();
     }
   }
-
-  let preventSameBellX = 0; //? check on this
 
   class Bell {
     constructor() {
@@ -167,25 +166,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
   };
 
-  //? fix the bell code to have one bell come down every X frames in random X pos
   //* Generate bell
-  const generateBell = () => {
-    for (let i = 0; i < numBells; i++) {
-      bellArray.push(new Bell());
-    }
-  };
-
-  //? thoughts on bell generation
-
   // [ - - - - X - -] 5
   // [ - - X - - - -] 4
   // [ - X - - - - -] 3
   // [ - - X - - - -] 2
   // [ X - - - - - -] 1
   //* 1. I will break the width into 7 columns
-
-  const colWidth = Math.floor(SCREEN_WIDTH / 7);
-  console.log("screen width", SCREEN_WIDTH);
+  const colWidth = Math.floor(SCREEN_WIDTH / numBellCols);
   const SCREEN_X_MID = Math.floor(SCREEN_WIDTH / 2);
   const bellXpos = [
     SCREEN_X_MID - colWidth * 3,
@@ -196,13 +184,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
     SCREEN_X_MID + colWidth * 2,
     SCREEN_X_MID + colWidth * 3,
   ];
-  console.log("🚀 ~ file: app.js ~ line 195 ~ bellXpos", bellXpos);
   //* 2. Bells should only be produced at a given y interval
   //* 3. Each new bell is no more than -2 to +2 x away from previous bell
+
   let prevR = 0;
   let currR = Math.floor(bellXpos.length / 2); //3, start at centre
 
-  const generateX = () => {
+  const randBellX = () => {
     prevR = currR;
     while (
       currR === prevR || //prevents a random bell from having same X as a previous bell
@@ -214,19 +202,19 @@ document.addEventListener("DOMContentLoaded", function (event) {
     return currR;
   };
 
-  const newBellCoord = {
-    x: bellXpos[generateX()],
-    y: bellSize,
+  const generateBell = () => {
+    let bell = new Bell();
+    bell.x = bellXpos[randBellX()];
+    bell.y = 0 - bellSize;
+    console.log(bell);
+    bellArray.push(bell);
   };
 
-  const bell1 = new Bell();
-  bell1.x = newBellCoord.x;
-  bell1.y = newBellCoord.y;
-  console.log(newBellCoord);
-
-  const bellRender = (bell) => {
-    bell.update();
-    bell.draw();
+  const bellRender = (arr) => {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i].update();
+      arr[i].draw();
+    }
   };
 
   //* Animate / Game loop
@@ -241,12 +229,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
     player.draw();
 
     //* bell code
-
-    bellRender(bell1);
-    // bellRender(bellArray);
-    // if (gameFrame % 300 === 0) {
-    //   generateBell();
-    // }
+    bellRender(bellArray);
+    setTimeout(() => {
+      generateBell(), 10000;
+    });
 
     //* snow code
     bgCtx.clearRect(0, 0, bg.width, bg.height);
