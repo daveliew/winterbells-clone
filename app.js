@@ -309,21 +309,3 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
   gameLoop(timeStamp);
 });
-
-//! potentially useless code lol
-// const controller = {
-//   clicked: false,
-//   mouseListener(event) {
-//     const mouse_state = event.type === "mousedown" ? true : false;
-
-//     switch(event){
-// case "mousedown" :
-
-//     }
-//     mouseClick = mouse_state;
-//     console.log("mouse click detected in MouseListener");
-//   },
-// };
-
-// window.addEventListener("mousemove", controller.mouseListener);
-// window.addEventListener("mousedown", controller.mouseListener);
