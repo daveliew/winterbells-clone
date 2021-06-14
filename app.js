@@ -17,16 +17,21 @@
 //? refactor code --> clear all //? stuff.
 
 //! DATA
+const GAME_WIDTH = 800;
+const GAME_HEIGHT = 600;
 
 const gravityPull = 0.7;
 const bellSize = 10;
-const numBells = 5; //! test
+const bellSpacing = 70;
+const numBells = 8; //! test
 const numBellCols = 7;
 const difficulty = 3;
+const playerJump = bellSpacing * 2;
 
 let hue = 0;
 let playerActivated = false;
 let mouseClick = false;
+let collision = false;
 let gameFrame = 0;
 
 const snow = {
@@ -46,14 +51,19 @@ let movingSpeed = 50;
 
 //* MAIN PROGRAMME *//
 document.addEventListener("DOMContentLoaded", function (event) {
+  //* background layer
   const bg = document.getElementById("background-layer");
-  const bgCtx = bg.getContext("2d"); //* add context via bgCtx
+  const bgCtx = bg.getContext("2d");
+  bg.width = window.innerWidth;
+  bg.height = window.innerHeight;
+
+  //* game layer
   const canvas = document.getElementById("game-layer");
   const ctx = canvas.getContext("2d");
-  bg.width = SCREEN_WIDTH;
-  bg.height = SCREEN_HEIGHT;
-  const colWidth = Math.floor(SCREEN_WIDTH / numBellCols);
-  const SCREEN_X_MID = Math.floor(SCREEN_WIDTH / 2);
+  canvas.width = GAME_WIDTH;
+  canvas.height = GAME_HEIGHT;
+  const colWidth = Math.floor(canvas.width / numBellCols);
+  const SCREEN_X_MID = Math.floor(canvas.width / 2);
 
   const bellXpos = [
     SCREEN_X_MID - colWidth * 3,
@@ -117,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.velocityY = 0;
       this.color = "white";
       this.size = bellSize;
+      this.collided = false;
     }
     update() {
       //! falling bell generates if player has not touched any bells.
@@ -127,6 +138,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
       this.velocityX *= 0.9;
       // this.velocityY *= 0.9;
+      this.hasCollided();
     }
     draw() {
       ctx.fillStyle = this.color;
@@ -139,9 +151,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
       const distance = Math.sqrt(
         Math.pow(player.x - this.x, 2) + Math.pow(player.y - this.y, 2)
       );
-      if (distance <= 100) {
+      if (distance <= 20) {
         console.log("touched");
+        this.collided = true;
+        player.y -= playerJump;
       }
+      return (collision = true);
     }
   }
 
@@ -153,22 +168,26 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.mass = 5;
       this.x = canvas.width / 2;
       this.y = canvas.height - this.height; //! testing
-      this.velocityX = 8;
+      this.velocityX = 5;
       this.velocityY = 0;
       this.frame = 0;
       this.jumping = false;
       this.secondsPassed = 0;
+      this.collision = false;
     }
     update(secondsPassed) {
       if (!playerActivated) {
         return;
       } // prevent left right movement till screen is clicked.
       //! testing
+      if (this.collision) {
+        console.log("Hit a bell!");
+      }
       if (mouseClick && this.jumping === false) {
         // this.y += 50 * secondsPassed;
         this.y -= 50; //! change to seconds
         // mouseClick = false;//! testing
-        console.log("player jump detected in player obj");
+        console.log("***player jump detected in player obj***");
         console.log("player y pos and velocity", player.y, player.velocityY);
 
         this.jumping = true;
@@ -236,6 +255,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   });
 
   //* Generate bell
+  //? refactor this to Simon's suggestion if there's time --> next bell takes a random pos from the array of possibilities
   // [ - - - X - - -] 5
   // [ - X - - - - -] 4
   // [ - - - X - - -] 3
@@ -262,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       let newX = randBellX();
       //! trying to slow down bell production
       let bell = new Bell(bellXpos[newX], prevY);
-      prevY += 20;
+      prevY += bellSpacing;
       bellArray.push(bell);
       console.log("bell created", bell);
     }
@@ -272,7 +292,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
     for (let i = 0; i < arr.length; i++) {
       arr[i].update();
       arr[i].draw();
-      if (arr[i].y > canvas.height) {
+      if (
+        arr[i].collided === true ||
+        arr[i].y > canvas.height ||
+        arr[i].y - player.y > 100
+      ) {
+        //! key condition
         arr.splice(i, 1); // remove bell from array when it leaves screen
       }
     }
@@ -284,18 +309,19 @@ document.addEventListener("DOMContentLoaded", function (event) {
   generateSnow();
 
   const gameLoop = (timeStamp) => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    collision = false;
     //* time calculation
     secondsPassed = (timeStamp - oldTimeStamp) / 1000;
     secondsPassed = Math.min(secondsPassed, 0.1);
     oldTimeStamp = timeStamp;
 
-    //* player code
-
-    player.update(secondsPassed);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    player.draw();
-
     //* bell code
+
+    //* player code
+    player.update(secondsPassed);
+
+    player.draw();
 
     generateBell();
     bellRender(bellArray);
@@ -308,9 +334,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
       generateSnow();
     }
 
-    //* Incrementors
+    //* Incrementors + resets
     hue += 2;
     gameFrame++;
+    collision = false;
 
     requestAnimationFrame(gameLoop); // recursive game loop
 
