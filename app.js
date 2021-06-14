@@ -126,15 +126,16 @@ document.addEventListener("DOMContentLoaded", function (event) {
   class Bell {
     constructor() {
       this.x = bellXpos[randBellX()];
-      this.y = 0 + bellSize;
+      this.y = 0;
       this.velocityX = 0;
       this.velocityY = 0;
       this.color = "white";
       this.size = bellSize;
     }
     update() {
-      this.velocityX += Math.round(Math.random() - 1) + 0.5;
-      this.velocityY += gravityPull / 8;
+      //! falling bell generates if player has not touched any bells.
+      //! bells will stop when player collides
+      this.velocityY += Math.round(gravityPull) / 20;
       this.x += this.velocityX;
       this.y += this.velocityY;
 
@@ -254,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       arr[i].update();
       arr[i].draw();
       if (arr[i].y > canvas.height) {
-        arr.splice(i, 1);
+        arr.splice(i, 1); // remove bell from array when it leaves screen
       }
     }
   };
@@ -276,6 +277,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     player.draw();
 
+    //* bell code
+    if (gameFrame % 300 === 0) {
+      generateBell();
+    }
+    console.log(bellArray);
+    bellRender(bellArray);
+
     //* snow code
     bgCtx.clearRect(0, 0, bg.width, bg.height);
     bgCtx.fillStyle = "rgba(0,0,0,0.1)"; // rectangle that covers screen over and over
@@ -283,6 +291,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     if (gameFrame % 200 === 0) {
       generateSnow();
     }
+
     //* Incrementors
     hue += 2;
     gameFrame++;
