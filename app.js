@@ -21,7 +21,7 @@ const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
 const gravityPull = 0.7;
 const bellSize = 10;
-const numBells = 1; //? try to optimise this later
+const numBells = 5; //! test
 const numBellCols = 7;
 const difficulty = 3;
 const colWidth = Math.floor(SCREEN_WIDTH / numBellCols);
@@ -108,25 +108,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
   //! FIND A WAY TO MAKE STATIC BELLS FIRST.
   //! BELLS ONLY FALL UP TO A CERTAIN Y, then they are static.
 
-  let prevR = 0;
-  let currR = Math.floor(bellXpos.length / 2); //3, start at centre
-
-  const randBellX = () => {
-    prevR = currR;
-    while (
-      currR === prevR || //prevents a random bell from having same X as a previous bell
-      currR - prevR <= -difficulty || //prevents a bell from being too far from a current bell
-      currR - prevR >= difficulty
-    ) {
-      currR = Math.floor(Math.random() * bellXpos.length);
-    }
-    return currR;
-  };
-
   class Bell {
-    constructor() {
-      this.x = bellXpos[randBellX()];
-      this.y = 0;
+    constructor(posX, posY) {
+      this.x = posX;
+      this.y = posY;
       this.velocityX = 0;
       this.velocityY = 0;
       this.color = "white";
@@ -135,12 +120,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
     update() {
       //! falling bell generates if player has not touched any bells.
       //! bells will stop when player collides
-      this.velocityY += Math.round(gravityPull) / 20;
+      // this.velocityY += Math.round(gravityPull) / 20;
       this.x += this.velocityX;
       this.y += this.velocityY;
 
       this.velocityX *= 0.9;
-      this.velocityY *= 0.9;
+      // this.velocityY *= 0.9;
     }
     draw() {
       ctx.fillStyle = this.color;
@@ -193,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       }
 
       this.x += dx;
-      this.y += gravityPull;
+      this.y += 1 + gravityPull / 2;
 
       // this.velocityY = 0;
       // this.y += this.velocityY; //! major bug around here
@@ -244,10 +229,36 @@ document.addEventListener("DOMContentLoaded", function (event) {
   });
 
   //* Generate bell
+  // [ - - - X - - -] 5
+  // [ - X - - - - -] 4
+  // [ - - - X - - -] 3
+  // [ - - - - - X -] 2
+  // [ - - X - - - -] 1
+  let prevX = 0;
+  let currX = Math.floor(bellXpos.length / 2); //3, start at centre
+
+  const randBellX = () => {
+    prevX = currX;
+    while (
+      currX === prevX || //prevents a random bell from having same X as a previous bell
+      currX - prevX <= -difficulty || //prevents a bell from being too far from a current bell
+      currX - prevX >= difficulty
+    ) {
+      currX = Math.floor(Math.random() * bellXpos.length);
+    }
+    return currX;
+  };
+
   const generateBell = () => {
-    let bell = new Bell();
-    bellArray.push(bell);
-    console.log("bell created");
+    let prevY = 0;
+    while (bellArray.length < numBells) {
+      let newX = randBellX();
+      //! trying to slow down bell production
+      let bell = new Bell(bellXpos[newX], prevY);
+      prevY += 20;
+      bellArray.push(bell);
+      console.log("bell created", bell);
+    }
   };
 
   const bellRender = (arr) => {
@@ -278,10 +289,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     player.draw();
 
     //* bell code
-    if (gameFrame % 300 === 0) {
-      generateBell();
-    }
-    console.log(bellArray);
+
+    generateBell();
     bellRender(bellArray);
 
     //* snow code
