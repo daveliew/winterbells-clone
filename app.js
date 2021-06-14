@@ -17,15 +17,13 @@
 //? refactor code --> clear all //? stuff.
 
 //! DATA
-const SCREEN_WIDTH = window.innerWidth;
-const SCREEN_HEIGHT = window.innerHeight;
+
 const gravityPull = 0.7;
 const bellSize = 10;
 const numBells = 5; //! test
 const numBellCols = 7;
 const difficulty = 3;
-const colWidth = Math.floor(SCREEN_WIDTH / numBellCols);
-const SCREEN_X_MID = Math.floor(SCREEN_WIDTH / 2);
+
 let hue = 0;
 let playerActivated = false;
 let mouseClick = false;
@@ -38,15 +36,6 @@ const snow = {
 };
 
 const bellArray = [];
-const bellXpos = [
-  SCREEN_X_MID - colWidth * 3,
-  SCREEN_X_MID - colWidth * 2,
-  SCREEN_X_MID - colWidth * 1,
-  SCREEN_X_MID,
-  SCREEN_X_MID + colWidth * 1,
-  SCREEN_X_MID + colWidth * 2,
-  SCREEN_X_MID + colWidth * 3,
-];
 
 //! FIX this
 //*Handle Dynamic Frames using Delta Time
@@ -63,6 +52,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
   const ctx = canvas.getContext("2d");
   bg.width = SCREEN_WIDTH;
   bg.height = SCREEN_HEIGHT;
+  const colWidth = Math.floor(SCREEN_WIDTH / numBellCols);
+  const SCREEN_X_MID = Math.floor(SCREEN_WIDTH / 2);
+
+  const bellXpos = [
+    SCREEN_X_MID - colWidth * 3,
+    SCREEN_X_MID - colWidth * 2,
+    SCREEN_X_MID - colWidth * 1,
+    SCREEN_X_MID,
+    SCREEN_X_MID + colWidth * 1,
+    SCREEN_X_MID + colWidth * 2,
+    SCREEN_X_MID + colWidth * 3,
+  ];
 
   window.addEventListener("resize", () => {
     bg.width = SCREEN_WIDTH;
@@ -133,11 +134,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
       ctx.arc(this.x, this.y, this.size, 0, Math.PI);
       ctx.fill();
     }
-    hasCollided() {} //? add collision detection and add y velocity to player
+    hasCollided() {
+      //? add collision detection and add y velocity to player
+      const distance = Math.sqrt(
+        Math.pow(player.x - this.x, 2) + Math.pow(player.y - this.y, 2)
+      );
+      if (distance <= 100) {
+        console.log("touched");
+      }
+    }
   }
 
   //* Generate Player
-  //? can we add friction to player?
   class Player {
     constructor() {
       this.width = 20;
@@ -159,7 +167,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
       if (mouseClick && this.jumping === false) {
         // this.y += 50 * secondsPassed;
         this.y -= 50; //! change to seconds
-
         // mouseClick = false;//! testing
         console.log("player jump detected in player obj");
         console.log("player y pos and velocity", player.y, player.velocityY);
