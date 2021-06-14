@@ -24,7 +24,6 @@ const bellSize = 10;
 const numBells = 1; //? try to optimise this later
 const numBellCols = 7;
 const difficulty = 3;
-const playerXAcceleration = 8;
 const colWidth = Math.floor(SCREEN_WIDTH / numBellCols);
 const SCREEN_X_MID = Math.floor(SCREEN_WIDTH / 2);
 const bellXpos = [
@@ -48,6 +47,12 @@ const snow = {
 };
 
 const bellArray = [];
+
+//*Handle Dynamic Frames using Delta Time
+let secondsPassed,
+  oldTimeStamp,
+  timeStamp = 0;
+let movingSpeed = 50;
 
 //! MAIN
 document.addEventListener("DOMContentLoaded", function (event) {
@@ -148,22 +153,26 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.mass = 5;
       this.x = canvas.width / 2;
       this.y = canvas.height - this.height; //! testing
-      this.velocityX = 0;
+      this.velocityX = 8;
       this.velocityY = 0;
       this.frame = 0;
-      this.jumping = true;
+      this.jumping = false;
+      this.secondsPassed = 0;
     }
-    update() {
+    update(secondsPassed) {
       //* base gravity effects
 
       if (!playerActivated) {
         return;
       } //* prevent left right movement till screen is clicked.
-
+      //! testing
       if (mouseClick && this.jumping === false) {
-        this.velocityY -= 20;
-        this.jumping = false;
+        this.velocityY -= 20 * secondsPassed;
+
+        this.jumping = true;
+        mouseClick = false;
         console.log("player jump detected in player obj");
+        console.log("player y pos and velocity", player.y, player.velocityY);
       }
 
       // if (this.jumping) {
@@ -175,14 +184,17 @@ document.addEventListener("DOMContentLoaded", function (event) {
       //   }
       // }
       //? trying this method to "calibrate mouse move to x move"
-      let dx = Math.floor((mouse.x - this.x) / playerXAcceleration);
+      let dx = Math.floor((mouse.x - this.x) / this.velocityX);
 
       //* scale down dx
-      if (dx > playerXAcceleration) {
-        dx /= playerXAcceleration;
+      if (dx > this.velocityX) {
+        dx /= this.velocityX;
+        dx = Math.round(dx);
       }
 
       this.x += dx;
+      console.log(dx, this.x);
+      this.Y += this.velocityY;
 
       //*prevent player from leaving canvas
       if (this.x < 0) {
@@ -220,19 +232,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
   //? fix this code
   canvas.addEventListener("mousedown", (event) => {
     playerActivated = true;
+    mouseClick = true;
     console.log(event + "detected");
     //? find a way to remove mousedown after click so that player must use bells to jump
     //? https://www.geeksforgeeks.org/javascript-removeeventlistener-method-with-examples/
   });
-
-  const controller = {
-    clicked: false,
-    mouseListener(event) {
-      const mouse_state = event.type === "mousedown" ? true : false;
-      mouseClick = mouse_state;
-      console.log("mouse click detected in MouseListener");
-    },
-  };
 
   //* Generate bell
   const generateBell = () => {
@@ -256,10 +260,16 @@ document.addEventListener("DOMContentLoaded", function (event) {
   console.log("🚀 ~ file: app.js ~ line 92 ~ player", player);
   generateSnow();
 
-  const gameLoop = () => {
+  const gameLoop = (timeStamp) => {
+    //* time calculation
+    secondsPassed = (timeStamp - oldTimeStamp) / 1000;
+    secondsPassed = Math.min(secondsPassed, 0.1);
+    oldTimeStamp = timeStamp;
+
     //* player code
+
+    player.update(secondsPassed);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    player.update();
     player.draw();
 
     //* bell code
@@ -282,8 +292,28 @@ document.addEventListener("DOMContentLoaded", function (event) {
     gameFrame++;
 
     requestAnimationFrame(gameLoop); // recursive game loop
+
+    //! TEST AREA
+    // console.log("player y pos and velocity", player.y, player.velocityY);
   };
-  window.addEventListener("mousemove", controller.mouseListener);
-  window.addEventListener("mousedown", controller.mouseListener); //! test this
-  gameLoop();
+
+  gameLoop(timeStamp);
 });
+
+//! potentially useless code lol
+// const controller = {
+//   clicked: false,
+//   mouseListener(event) {
+//     const mouse_state = event.type === "mousedown" ? true : false;
+
+//     switch(event){
+// case "mousedown" :
+
+//     }
+//     mouseClick = mouse_state;
+//     console.log("mouse click detected in MouseListener");
+//   },
+// };
+
+// window.addEventListener("mousemove", controller.mouseListener);
+// window.addEventListener("mousedown", controller.mouseListener);
