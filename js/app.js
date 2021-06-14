@@ -31,6 +31,7 @@ let playerActivated = false;
 let mouseClick = false;
 let collision = false;
 let gameFrame = 0;
+let score = 0;
 
 //! FIX this
 //*Handle Dynamic Frames using Delta Time
@@ -119,8 +120,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
         console.log("touched");
         this.collided = true;
         player.y -= playerJump;
+        this.addScore();
       }
       return (collision = true);
+    }
+    addScore() {
+      score += 1;
+      console.log("Player Score", score);
     }
   }
 
@@ -271,8 +277,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
   generateSnow();
 
   const gameLoop = (timeStamp) => {
+    //* reset variables for next frame phase
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     collision = false;
+    //
+
     //* time calculation
     secondsPassed = (timeStamp - oldTimeStamp) / 1000;
     secondsPassed = Math.min(secondsPassed, 0.1);
@@ -280,13 +289,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     //* bell code
 
+    generateBell();
+    bellRender(bellArray);
+
     //* player code
     player.update(secondsPassed);
 
     player.draw();
-
-    generateBell();
-    bellRender(bellArray);
 
     //* snow code
     bgCtx.clearRect(0, 0, bg.width, bg.height);
