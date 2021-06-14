@@ -132,7 +132,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     update() {
       //! falling bell generates if player has not touched any bells.
       //! bells will stop when player collides
-      // this.velocityY += Math.round(gravityPull) / 20;
+      if (this.y > canvas.height - 200)
+        this.velocityY += Math.round(gravityPull) / 20;
       this.x += this.velocityX;
       this.y += this.velocityY;
 
@@ -169,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.x = canvas.width / 2;
       this.y = canvas.height - this.height; //! testing
       this.velocityX = 5;
-      this.velocityY = 0;
+      this.velocityY = -10;
       this.frame = 0;
       this.jumping = false;
       this.secondsPassed = 0;
@@ -191,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
         console.log("player y pos and velocity", player.y, player.velocityY);
 
         this.jumping = true;
-        this.y += this.velocityY;
+        this.y += this.velocityY * this.mass;
       }
 
       //? trying this method to "calibrate mouse move to x move". wrap this in condition?
@@ -284,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       let bell = new Bell(bellXpos[newX], prevY);
       prevY += bellSpacing;
       bellArray.push(bell);
-      console.log("bell created", bell);
+      console.log("***BELL CREATED***", bell);
     }
   };
 
