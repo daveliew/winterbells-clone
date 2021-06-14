@@ -1,11 +1,18 @@
 /** @type {HTMLCanvasElement} */
 //! TO DO LIST
+//* core game build
 //? collision detection
-//? add pre-rendering for main character
-//? fix game physics
+//? fix game physics (play jump, bell render)
+//? add score
+//? add delta time
+//? add viewport
+//* finesse
 //? add music
 //? add sprites
 //? create max width and height
+//? create background image
+//* optimisation
+//? add pre-rendering for main character
 //? multiple js files to better read code
 //? refactor code
 
@@ -60,13 +67,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.x = Math.floor(Math.random() * bg.width);
       this.y = Math.floor(Math.random()) + 1;
       this.size = Math.floor(Math.random() * snow.size) + 1;
-      this.speedX = Math.random() * 3 - 1.5; //* create -ve and +ve vector
-      this.speedY = Math.random() * gravityPull + 1;
+      this.velocityX = Math.random() * 3 - 1.5; //* create -ve and +ve vector
+      this.velocityY = Math.random() * gravityPull + 1;
       this.color = `hsl(${hue}, 100%, 50%)`;
     }
     update() {
       this.x += Math.random() * 1 - 0.5; //* 2D vector creation
-      this.y += this.speedY;
+      this.y += this.velocityY;
     }
     draw() {
       bgCtx.fillStyle = this.color;
@@ -91,6 +98,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
   };
 
   //* Generate Bell
+  //! FIND A WAY TO MAKE STATIC BELLS FIRST.
+  //! BELLS ONLY FALL UP TO A CERTAIN Y, then they are static.
 
   let prevR = 0;
   let currR = Math.floor(bellXpos.length / 2); //3, start at centre
@@ -110,13 +119,15 @@ document.addEventListener("DOMContentLoaded", function (event) {
   class Bell {
     constructor() {
       this.x = bellXpos[randBellX()];
-      this.y = 0;
+      this.y = 0 + bellSize;
+      this.velocityX = 0;
+      this.velocityY = 0;
       this.color = "white";
       this.size = bellSize;
     }
     update() {
       this.x += Math.random() - 0.5;
-      this.y -= gravityPull; //? code looks suspect, revisit
+      this.y -= gravityPull / 2; //? code looks suspect, revisit
     }
     draw() {
       ctx.fillStyle = this.color;
@@ -135,9 +146,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.height = 20;
       this.x = canvas.width / 2;
       this.y = canvas.height - this.height;
-      this.speedX = 10;
-      this.speedY = 5;
+      this.velocityX = 10;
+      this.velocityY = 5;
       this.frame = 0;
+      this.jumping = false;
     }
     update() {
       if (!playerActivated) {
