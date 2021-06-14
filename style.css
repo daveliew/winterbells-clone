@@ -8,6 +8,15 @@
   z-index: 1;
 }
 
+#snow-layer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
 #game-layer {
   position: fixed;
   background: rgba(23, 200, 0, 0.2);
@@ -16,5 +25,5 @@
   top: 10%;
   left: 0%;
   bottom: 20%;
-  z-index: 2;
+  z-index: 3;
 }

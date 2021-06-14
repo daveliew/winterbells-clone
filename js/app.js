@@ -2,8 +2,8 @@
 //! TO DO LIST
 //* core game build
 //? add delta time
-//? add score
-//? add viewport
+//? add viewport + fix bg image
+//? add condition that after first bell is caught, gameover sequence triggered
 //* finesse
 //? player gravity
 //? bell generation in endless loop
@@ -17,8 +17,8 @@
 //? refactor code --> clear all //? stuff.
 
 //! DATA
-const GAME_WIDTH = 800;
-const GAME_HEIGHT = 600;
+const GAME_WIDTH = 600;
+const GAME_HEIGHT = 800;
 
 const gravityPull = 0.7;
 const collisionDistance = 20;
@@ -145,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.jumping = false; //? not using this well, try to obtimise
       this.secondsPassed = 0;
       this.collision = false;
+      this.parallax = this.y;
     }
     update(secondsPassed) {
       if (!playerActivated) {
@@ -155,8 +156,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
         this.y -= 50; //! change to seconds
         // mouseClick = false;//! testing
         console.log("***player jump detected in player obj***");
-
         this.jumping = true;
+        this.parallax = GAME_HEIGHT - this.y;
         this.y += this.velocityY * this.mass; //! balance out player falling. feels too floaty
       }
 
@@ -169,13 +170,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
         dx /= this.velocityX;
         dx = Math.round(dx);
       }
-
       this.x += dx;
       this.y += 1 + gravityPull / 2;
-
       // this.velocityY = 0;
       // this.y += this.velocityY; //! major bug around here
-
       // this.velocityY *= 0.9;
 
       //*prevent player from leaving canvas
@@ -194,6 +192,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     draw() {
       ctx.fillStyle = "blue";
       ctx.fillRect(this.x, this.y, this.width, this.height);
+      if (this.jumping === true) {
+        bgCtx.drawImage(img, 0, this.parallax, 800, 600); //! COULD THIS BE IT??
+      }
     }
   }
 
@@ -298,8 +299,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
     player.draw();
 
     //* snow code
-    bgCtx.clearRect(0, 0, bg.width, bg.height);
-    bgCtx.fillStyle = "rgba(0,0,0,0.1)"; // rectangle that covers screen over and over
+    snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+    snowCtx.fillStyle = "rgba(0,0,0,0.1)"; // rectangle that covers screen over and over
     snowRender(snow.snowArray);
     if (gameFrame % 200 === 0) {
       generateSnow();
