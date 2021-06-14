@@ -1,12 +1,12 @@
 /** @type {HTMLCanvasElement} */
 //! TO DO LIST
 //* core game build
-//? fix game physics (play jump, bell render)
 //? add delta time
-//? collision detection
 //? add score
 //? add viewport
 //* finesse
+//? player gravity
+//? bell generation in endless loop
 //? add music
 //? add sprites
 //? create max width and height
@@ -21,26 +21,16 @@ const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
 
 const gravityPull = 0.7;
-const bellSize = 10;
-const bellSpacing = 70;
-const numBells = 8; //! test
-const numBellCols = 7;
+const collisionDistance = 20;
+
 const difficulty = 3;
+const bellSpacing = 70;
 const playerJump = bellSpacing * 2;
 
-let hue = 0;
 let playerActivated = false;
 let mouseClick = false;
 let collision = false;
 let gameFrame = 0;
-
-const snow = {
-  snowArray: [],
-  size: 3,
-  amt: 15,
-};
-
-const bellArray = [];
 
 //! FIX this
 //*Handle Dynamic Frames using Delta Time
@@ -51,12 +41,6 @@ let movingSpeed = 50;
 
 //* MAIN PROGRAMME *//
 document.addEventListener("DOMContentLoaded", function (event) {
-  //* background layer
-  const bg = document.getElementById("background-layer");
-  const bgCtx = bg.getContext("2d");
-  bg.width = window.innerWidth;
-  bg.height = window.innerHeight;
-
   //* game layer
   const canvas = document.getElementById("game-layer");
   const ctx = canvas.getContext("2d");
@@ -79,28 +63,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
     bg.width = SCREEN_WIDTH;
     bg.height = SCREEN_HEIGHT;
   });
-
-  //* Generate snow
-  class Snow {
-    constructor() {
-      this.x = Math.floor(Math.random() * bg.width);
-      this.y = Math.floor(Math.random() - 10) + 5;
-      this.size = Math.floor(Math.random() * snow.size) + 1;
-      this.velocityX = Math.random() * 3 - 1.5;
-      this.velocityY = Math.random() * gravityPull + 0.5;
-      this.color = `hsl(${hue}, 100%, 50%)`;
-    }
-    update() {
-      this.x += Math.random() * 1 - 0.5; //* 2D vector creation
-      this.y += this.velocityY;
-    }
-    draw() {
-      bgCtx.fillStyle = this.color;
-      bgCtx.beginPath(); //* like a paint path
-      bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      bgCtx.fill();
-    }
-  }
 
   const generateSnow = () => {
     for (let i = 0; i < snow.amt; i++) {
@@ -132,14 +94,15 @@ document.addEventListener("DOMContentLoaded", function (event) {
     update() {
       //! falling bell generates if player has not touched any bells.
       //! bells will stop when player collides
-      if (this.y > canvas.height - 200)
+      if (this.y > canvas.height - 400)
+        //? what's optimal?
         this.velocityY += Math.round(gravityPull) / 20;
       this.x += this.velocityX;
       this.y += this.velocityY;
 
       this.velocityX *= 0.9;
-      // this.velocityY *= 0.9;
-      this.hasCollided();
+      this.velocityY *= 0.9;
+      this.hasCollided(); // check for collision with Player
     }
     draw() {
       ctx.fillStyle = this.color;
@@ -152,82 +115,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
       const distance = Math.sqrt(
         Math.pow(player.x - this.x, 2) + Math.pow(player.y - this.y, 2)
       );
-      if (distance <= 20) {
+      if (distance <= collisionDistance) {
         console.log("touched");
         this.collided = true;
         player.y -= playerJump;
       }
       return (collision = true);
-    }
-  }
-
-  //* Generate Player
-  class Player {
-    constructor() {
-      this.width = 20;
-      this.height = 20;
-      this.mass = 5;
-      this.x = canvas.width / 2;
-      this.y = canvas.height - this.height; //! testing
-      this.velocityX = 5;
-      this.velocityY = -10;
-      this.frame = 0;
-      this.jumping = false;
-      this.secondsPassed = 0;
-      this.collision = false;
-    }
-    update(secondsPassed) {
-      if (!playerActivated) {
-        return;
-      } // prevent left right movement till screen is clicked.
-      //! testing
-      if (this.collision) {
-        console.log("Hit a bell!");
-      }
-      if (mouseClick && this.jumping === false) {
-        // this.y += 50 * secondsPassed;
-        this.y -= 50; //! change to seconds
-        // mouseClick = false;//! testing
-        console.log("***player jump detected in player obj***");
-        console.log("player y pos and velocity", player.y, player.velocityY);
-
-        this.jumping = true;
-        this.y += this.velocityY * this.mass;
-      }
-
-      //? trying this method to "calibrate mouse move to x move". wrap this in condition?
-      let dx = Math.floor((mouse.x - this.x) / this.velocityX);
-
-      //* scale down dx
-      if (dx > this.velocityX) {
-        dx /= this.velocityX;
-        dx = Math.round(dx);
-      }
-
-      this.x += dx;
-      this.y += 1 + gravityPull / 2;
-
-      // this.velocityY = 0;
-      // this.y += this.velocityY; //! major bug around here
-
-      // this.velocityY *= 0.9;
-
-      //*prevent player from leaving canvas
-      if (this.x < 0) {
-        this.x = 0;
-      } else if (this.x + this.width > canvas.width) {
-        this.x = canvas.width - this.width;
-      }
-
-      if (this.y >= canvas.height - this.height) {
-        this.y = canvas.height - this.height;
-        // this.velocityY = 0;
-        // this.jumping = false;
-      }
-    }
-    draw() {
-      ctx.fillStyle = "blue";
-      ctx.fillRect(this.x, this.y, this.width, this.height);
     }
   }
 
@@ -278,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   };
 
   const generateBell = () => {
-    let prevY = 0;
+    let prevY = -100; //! does this work?
     while (bellArray.length < numBells) {
       let newX = randBellX();
       //! trying to slow down bell production
@@ -296,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       if (
         arr[i].collided === true ||
         arr[i].y > canvas.height ||
-        arr[i].y - player.y > 100
+        arr[i].y - player.y > canvas.height / 2 //! buggy! Want to make a way that bell disappears if it's too far away
       ) {
         //! key condition
         arr.splice(i, 1); // remove bell from array when it leaves screen
