@@ -14,14 +14,14 @@
 //* optimisation
 //? add pre-rendering for main character
 //? multiple js files to better read code
-//? refactor code
+//? refactor code --> clear all //? stuff.
 
 //! DATA
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
 const gravityPull = -0.7;
 const bellSize = 10;
-const numBells = 7; //? try to optimise this later
+const numBells = 1; //? try to optimise this later
 const numBellCols = 7;
 const difficulty = 3;
 const playerXAcceleration = 8;
@@ -38,6 +38,7 @@ const bellXpos = [
 ];
 let hue = 0;
 let playerActivated = false;
+let mouseClick = false;
 let gameFrame = 0;
 
 const snow = {
@@ -62,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     bg.height = SCREEN_HEIGHT;
   });
 
+  //* Generate snow
   class Snow {
     constructor() {
       this.x = Math.floor(Math.random() * bg.width);
@@ -83,7 +85,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 
-  //* Generate snow
   const generateSnow = () => {
     for (let i = 0; i < snow.amt; i++) {
       snow.snowArray.push(new Snow());
@@ -144,18 +145,35 @@ document.addEventListener("DOMContentLoaded", function (event) {
     constructor() {
       this.width = 20;
       this.height = 20;
+      this.mass = 5;
       this.x = canvas.width / 2;
-      this.y = canvas.height - this.height;
-      this.velocityX = 10;
-      this.velocityY = 5;
+      this.y = canvas.height - this.height; //! testing
+      this.velocityX = 0;
+      this.velocityY = 0;
       this.frame = 0;
-      this.jumping = false;
+      this.jumping = true;
     }
     update() {
+      //* base gravity effects
+
       if (!playerActivated) {
         return;
       } //* prevent left right movement till screen is clicked.
 
+      if (mouseClick && this.jumping === false) {
+        this.velocityY -= 20;
+        this.jumping = false;
+        console.log("player jump detected in player obj");
+      }
+
+      // if (this.jumping) {
+      //   //! testing
+      //   if (this.velocityY <= 5) {
+      //     this.velocityY -= 1;
+      //   } else {
+      //     this.velocityY = 5;
+      //   }
+      // }
       //? trying this method to "calibrate mouse move to x move"
       let dx = Math.floor((mouse.x - this.x) / playerXAcceleration);
 
@@ -165,7 +183,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
       }
 
       this.x += dx;
-      this.y -= gravityPull;
 
       //*prevent player from leaving canvas
       if (this.x < 0) {
@@ -173,8 +190,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
       } else if (this.x + this.width > canvas.width) {
         this.x = canvas.width - this.width;
       }
-      if (this.y > canvas.height - this.height) {
+
+      if (this.y >= canvas.height - this.height) {
         this.y = canvas.height - this.height;
+        this.velocityY = 0;
+        this.jumping = false;
       }
     }
     draw() {
@@ -186,6 +206,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   //* Mouse Movements
 
   const mouse = {
+    //? centres mouse in canvas mid, not sure if necessary?
     x: canvas.width / 2,
     y: canvas.height / 2,
   };
@@ -199,17 +220,25 @@ document.addEventListener("DOMContentLoaded", function (event) {
   //? fix this code
   canvas.addEventListener("mousedown", (event) => {
     playerActivated = true;
-    player.y -= 50;
-
-    console.log("mouse click detected");
+    console.log(event + "detected");
     //? find a way to remove mousedown after click so that player must use bells to jump
     //? https://www.geeksforgeeks.org/javascript-removeeventlistener-method-with-examples/
   });
+
+  const controller = {
+    clicked: false,
+    mouseListener(event) {
+      const mouse_state = event.type === "mousedown" ? true : false;
+      mouseClick = mouse_state;
+      console.log("mouse click detected in MouseListener");
+    },
+  };
 
   //* Generate bell
   const generateBell = () => {
     let bell = new Bell();
     bellArray.push(bell);
+    console.log("bell created");
   };
 
   const bellRender = (arr) => {
@@ -234,10 +263,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
     player.draw();
 
     //* bell code
-    console.log(bellArray);
     bellRender(bellArray);
-    if (gameFrame % 30 === 0) {
-      generateBell();
+    if (gameFrame % 300 === 0) {
+      if (bellArray.length < numBells) {
+        generateBell();
+      }
     }
 
     //* snow code
@@ -253,5 +283,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     requestAnimationFrame(gameLoop); // recursive game loop
   };
+  window.addEventListener("mousemove", controller.mouseListener);
+  window.addEventListener("mousedown", controller.mouseListener); //! test this
   gameLoop();
 });
