@@ -1,10 +1,10 @@
 /** @type {HTMLCanvasElement} */
 //! TO DO LIST
 //* core game build
-//? collision detection
 //? fix game physics (play jump, bell render)
-//? add score
 //? add delta time
+//? collision detection
+//? add score
 //? add viewport
 //* finesse
 //? add music
@@ -132,8 +132,13 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.size = bellSize;
     }
     update() {
-      this.x += Math.random() - 0.5;
-      this.y -= gravityPull / 2; //? code looks suspect, revisit
+      this.velocityX += Math.round(Math.random() - 1) + 0.5;
+      this.velocityY -= gravityPull / 8;
+      this.x += this.velocityX;
+      this.y += this.velocityY;
+
+      this.velocityX *= 0.9;
+      this.velocityY *= 0.9;
     }
     draw() {
       ctx.fillStyle = this.color;
@@ -160,30 +165,24 @@ document.addEventListener("DOMContentLoaded", function (event) {
       this.secondsPassed = 0;
     }
     update(secondsPassed) {
-      //* base gravity effects
-
       if (!playerActivated) {
         return;
-      } //* prevent left right movement till screen is clicked.
+      } // prevent left right movement till screen is clicked.
       //! testing
       if (mouseClick && this.jumping === false) {
-        this.velocityY -= 20 * secondsPassed;
-
-        this.jumping = true;
-        mouseClick = false;
+        // this.y += 50 * secondsPassed;
+        if (this.velocityY < 0 && this.velocityY <= -100) {
+          this.velocityY -= 5; //! change to seconds
+        }
         console.log("player jump detected in player obj");
         console.log("player y pos and velocity", player.y, player.velocityY);
+
+        mouseClick = false;
+        this.jumping = true;
+        this.y += this.velocityY;
       }
 
-      // if (this.jumping) {
-      //   //! testing
-      //   if (this.velocityY <= 5) {
-      //     this.velocityY -= 1;
-      //   } else {
-      //     this.velocityY = 5;
-      //   }
-      // }
-      //? trying this method to "calibrate mouse move to x move"
+      //? trying this method to "calibrate mouse move to x move". wrap this in condition?
       let dx = Math.floor((mouse.x - this.x) / this.velocityX);
 
       //* scale down dx
@@ -193,8 +192,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
       }
 
       this.x += dx;
-      console.log(dx, this.x);
-      this.Y += this.velocityY;
+
+      // this.velocityY = 0;
+      // this.y += this.velocityY; //! major bug around here
+
+      // this.velocityY *= 0.9;
 
       //*prevent player from leaving canvas
       if (this.x < 0) {
@@ -205,8 +207,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
       if (this.y >= canvas.height - this.height) {
         this.y = canvas.height - this.height;
-        this.velocityY = 0;
-        this.jumping = false;
+        // this.velocityY = 0;
+        // this.jumping = false;
       }
     }
     draw() {
