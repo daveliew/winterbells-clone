@@ -116,8 +116,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
   };
 
   //* Generate Bell
-  //! FIND A WAY TO MAKE STATIC BELLS FIRST.
-  //! BELLS ONLY FALL UP TO A CERTAIN Y, then they are static.
+  //! BELLS ONLY FALL UP TO A CERTAIN Y, then they are static => based on position.
+  //? BUG - Bells will generate if canvas Y not adjusted to centre on Player.
 
   class Bell {
     constructor(posX, posY) {
