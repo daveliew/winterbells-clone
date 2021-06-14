@@ -19,22 +19,13 @@
 //! DATA
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
-const gravityPull = -0.7;
+const gravityPull = 0.7;
 const bellSize = 10;
 const numBells = 1; //? try to optimise this later
 const numBellCols = 7;
 const difficulty = 3;
 const colWidth = Math.floor(SCREEN_WIDTH / numBellCols);
 const SCREEN_X_MID = Math.floor(SCREEN_WIDTH / 2);
-const bellXpos = [
-  SCREEN_X_MID - colWidth * 3,
-  SCREEN_X_MID - colWidth * 2,
-  SCREEN_X_MID - colWidth * 1,
-  SCREEN_X_MID,
-  SCREEN_X_MID + colWidth * 1,
-  SCREEN_X_MID + colWidth * 2,
-  SCREEN_X_MID + colWidth * 3,
-];
 let hue = 0;
 let playerActivated = false;
 let mouseClick = false;
@@ -47,14 +38,24 @@ const snow = {
 };
 
 const bellArray = [];
+const bellXpos = [
+  SCREEN_X_MID - colWidth * 3,
+  SCREEN_X_MID - colWidth * 2,
+  SCREEN_X_MID - colWidth * 1,
+  SCREEN_X_MID,
+  SCREEN_X_MID + colWidth * 1,
+  SCREEN_X_MID + colWidth * 2,
+  SCREEN_X_MID + colWidth * 3,
+];
 
+//! FIX this
 //*Handle Dynamic Frames using Delta Time
 let secondsPassed,
   oldTimeStamp,
   timeStamp = 0;
 let movingSpeed = 50;
 
-//! MAIN
+//* MAIN PROGRAMME *//
 document.addEventListener("DOMContentLoaded", function (event) {
   const bg = document.getElementById("background-layer");
   const bgCtx = bg.getContext("2d"); //* add context via bgCtx
@@ -72,10 +73,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
   class Snow {
     constructor() {
       this.x = Math.floor(Math.random() * bg.width);
-      this.y = Math.floor(Math.random()) + 1;
+      this.y = Math.floor(Math.random() - 10) + 5;
       this.size = Math.floor(Math.random() * snow.size) + 1;
-      this.velocityX = Math.random() * 3 - 1.5; //* create -ve and +ve vector
-      this.velocityY = Math.random() * gravityPull + 1;
+      this.velocityX = Math.random() * 3 - 1.5;
+      this.velocityY = Math.random() * gravityPull + 0.5;
       this.color = `hsl(${hue}, 100%, 50%)`;
     }
     update() {
@@ -133,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
     update() {
       this.velocityX += Math.round(Math.random() - 1) + 0.5;
-      this.velocityY -= gravityPull / 8;
+      this.velocityY += gravityPull / 8;
       this.x += this.velocityX;
       this.y += this.velocityY;
 
@@ -171,13 +172,12 @@ document.addEventListener("DOMContentLoaded", function (event) {
       //! testing
       if (mouseClick && this.jumping === false) {
         // this.y += 50 * secondsPassed;
-        if (this.velocityY < 0 && this.velocityY <= -100) {
-          this.velocityY -= 5; //! change to seconds
-        }
+        this.y -= 50; //! change to seconds
+
+        // mouseClick = false;//! testing
         console.log("player jump detected in player obj");
         console.log("player y pos and velocity", player.y, player.velocityY);
 
-        mouseClick = false;
         this.jumping = true;
         this.y += this.velocityY;
       }
@@ -192,6 +192,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
       }
 
       this.x += dx;
+      this.y += gravityPull;
 
       // this.velocityY = 0;
       // this.y += this.velocityY; //! major bug around here
@@ -235,6 +236,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
   canvas.addEventListener("mousedown", (event) => {
     playerActivated = true;
     mouseClick = true;
+    player.jumping = false;
     console.log(event + "detected");
     //? find a way to remove mousedown after click so that player must use bells to jump
     //? https://www.geeksforgeeks.org/javascript-removeeventlistener-method-with-examples/
@@ -273,14 +275,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
     player.update(secondsPassed);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     player.draw();
-
-    //* bell code
-    bellRender(bellArray);
-    if (gameFrame % 300 === 0) {
-      if (bellArray.length < numBells) {
-        generateBell();
-      }
-    }
 
     //* snow code
     bgCtx.clearRect(0, 0, bg.width, bg.height);
