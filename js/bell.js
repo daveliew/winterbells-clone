@@ -23,18 +23,19 @@ class Bell {
     this.color = "yellow";
     this.size = bellSize;
     this.collided = false;
+    this.moving = true;
   }
   update() {
     //! falling bell generates if player has not touched any bells.
     //! bells will stop when player collides
-    // if (this.y > canvas.height - 600)
-    // if (this.y >= 0)
+    if (this.moving) {
+      this.velocityY = 0.5;
+      this.x += this.velocityX;
+      this.y += this.velocityY;
 
-    this.x += this.velocityX;
-    this.y += this.velocityY;
-
-    this.velocityX *= 0.9;
-    this.velocityY *= 0.9;
+      this.velocityX *= 0.9;
+      this.velocityY *= 0.9;
+    }
   }
   draw() {
     ctx.fillStyle = this.color;
