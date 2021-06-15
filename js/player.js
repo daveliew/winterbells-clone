@@ -8,8 +8,8 @@
 //? use a jumping method inside
 class Player {
   constructor() {
-    this.width = 30;
-    this.height = 30;
+    this.width = 20;
+    this.height = 20;
     this.mass = 10; //?
     this.x = canvas.width / 2;
     this.y = canvas.height - this.height; //! testing
@@ -26,7 +26,7 @@ class Player {
 
     if (mouseClick && this.jumping === false) {
       // this.y += 50 * secondsPassed;  //! change to seconds
-      this.y += -200;
+      this.y += -playerJump;
 
       mouseClick = false; //! testing
       this.jumping = true;
@@ -40,13 +40,14 @@ class Player {
 
     //? trying this method to "calibrate mouse move to x move". wrap this in condition?
     let dx = Math.floor(mouse.x - this.x);
-    // //* scale down dx
+    //* scale down dx
     if (dx > this.velocityX) {
       dx /= this.velocityX;
       dx = Math.round(dx);
     }
 
     this.x += dx;
+
     // console.log("dx", dx);
     // console.log("playerx", this.x);
 

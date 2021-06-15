@@ -25,8 +25,8 @@ const ctx = canvas.getContext("2d");
 const audioObj = new Audio("/assets/winterbells.mp3");
 audioObj.play();
 
-const GAME_WIDTH = 640;
-const GAME_HEIGHT = 800;
+const GAME_WIDTH = 600;
+const GAME_HEIGHT = 450;
 canvas.width = GAME_WIDTH;
 canvas.height = GAME_HEIGHT;
 
@@ -37,9 +37,9 @@ const gravityPull = 3;
 const difficulty = 3;
 const framesPerSnow = 200;
 
-const numBells = 15; //* change number of bells
-const bellSpacing = 100;
-const playerJump = bellSpacing * 1.2;
+const numBells = 10; //* change number of bells
+const bellSpacing = canvas.height / 5;
+const playerJump = bellSpacing * 1.3;
 const playerJumpVelocity = -8;
 const minBellHeight = playerJump - bellSize;
 
@@ -100,16 +100,17 @@ const generateBell = (posY) => {
     prevY -= bellSpacing;
     lowestBell = bell;
     bellArray.push(bell);
-    // console.log("***BELL CREATED***", bell);
   }
+  console.log("***BELLS CREATED***", bellArray);
 };
 
 const bellRender = (arr) => {
   const bellTranslation = bellSpacing;
 
   for (let i = 0; i < arr.length; i++) {
-    if (crossedHeight || arr[2].y < canvas.height / 3) {
-      //! tune this (BELL)
+    // if (crossedHeight || arr[2].y < canvas.height / 3) {
+    //! tune this (BELL)
+    if (crossedHeight) {
       arr[i].y = arr[i].y + bellTranslation;
       console.log("we're going places!");
     }
@@ -171,7 +172,7 @@ canvas.addEventListener("mousedown", (event) => {
 //* *** INITIALIZE GAME  *** *//
 const player = new Player();
 generateSnow();
-generateBell(player.y - canvas.height / 3);
+generateBell(player.y - canvas.height / 2);
 
 //*Handle Dynamic Frames using timeStamp (research Delta Time)
 let secondsPassed,
@@ -223,6 +224,7 @@ const gameLoop = (timeStamp) => {
   snowRender(snow.snowArray);
   if (gameFrame % framesPerSnow === 0) {
     generateSnow(); //only generate snow every 200 frames
+    console.log("***BELLS CREATED***", bellArray);
   }
 
   //* Incrementors + resets
