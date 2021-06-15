@@ -26,7 +26,7 @@ const gravityPull = 0.7;
 const collisionDistance = 20;
 const difficulty = 3;
 
-const numBells = 10; //! test
+const numBells = 10; //* change number of bells
 const bellSpacing = 70;
 const playerJump = bellSpacing * 1.5;
 
@@ -34,10 +34,11 @@ let playerActivated = false;
 let mouseClick = false;
 let collision = false;
 let gameFrame = 0;
-let lowestBell = {};
+let lowestBell = {}; //! is this useless?
 
-//! FIX this
-let movingSpeed = 50;
+let playerHeight = 0;
+let crossedHeight = false;
+
 // window.addEventListener("resize", () => {
 //   canvas.width = window.innerWidth;
 //   canvas.height = window.innerHeight;
@@ -99,6 +100,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const bellRender = (arr) => {
     for (let i = 0; i < arr.length; i++) {
+      if (crossedHeight) {
+        arr[i].y = arr[i].y + 200;
+        console.log("we're going places!");
+      }
       arr[i].update();
       arr[i].draw();
       hasCollided(player, arr[i]);
@@ -227,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     if (distance <= collisionDistance) {
       console.log("touched");
-      player.collided = true;
+      player.collision, (bell.collision = true);
       player.y -= playerJump;
       bellArray.splice(bell, 1);
       player.addScore();
@@ -246,6 +251,10 @@ document.addEventListener("DOMContentLoaded", () => {
     //* reset variables for next frame phase
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     collision = false;
+    playerHeight = Math.floor(GAME_HEIGHT - player.y);
+    if (playerHeight % 200 === 0) {
+      crossedHeight = true;
+    }
 
     //* time calculation
     secondsPassed = (timeStamp - oldTimeStamp) / 1000;
@@ -280,6 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
     hue += 2; // change snow colour
     gameFrame++;
     collision = false;
+    crossedHeight = false;
 
     requestAnimationFrame(gameLoop); // recursive game loop
 

@@ -29,8 +29,7 @@ class Bell {
     //! bells will stop when player collides
     // if (this.y > canvas.height - 600)
     // if (this.y >= 0)
-    //   //! falling bells test //? what's optimal?
-    //   this.velocityY += Math.round(gravityPull) / 20;
+
     this.x += this.velocityX;
     this.y += this.velocityY;
 
