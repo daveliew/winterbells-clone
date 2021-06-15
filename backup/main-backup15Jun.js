@@ -130,7 +130,6 @@ const bellRender = (arr) => {
 class Player {
   constructor() {
     this.width = 20;
-    q;
     this.height = 20;
     this.mass = 20;
     this.x = canvas.width / 2;

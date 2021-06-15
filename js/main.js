@@ -20,6 +20,9 @@
 const canvas = document.getElementById("game-layer");
 const ctx = canvas.getContext("2d");
 
+const audioObj = new Audio("/assets/winterbells.mp3");
+audioObj.play();
+
 const GAME_WIDTH = 32 * 15;
 const GAME_HEIGHT = 32 * 20;
 canvas.width = GAME_WIDTH;
@@ -95,7 +98,7 @@ const generateBell = (posY) => {
     prevY -= bellSpacing;
     lowestBell = bell;
     bellArray.push(bell);
-    console.log("***BELL CREATED***", bell);
+    // console.log("***BELL CREATED***", bell);
   }
 };
 
@@ -130,13 +133,12 @@ const bellRender = (arr) => {
 class Player {
   constructor() {
     this.width = 20;
-    q;
     this.height = 20;
     this.mass = 20;
     this.x = canvas.width / 2;
     this.y = canvas.height - this.height; //! testing
     this.velocityX = 5;
-    this.velocityY = -10; //? what is a good boost rate?
+    this.velocityY = -8; //? what is a good boost rate?
     this.frame = 0;
     this.jumping = false; //? not using this well, try to obtimise
     this.secondsPassed = 0;
