@@ -232,8 +232,8 @@ const gameLoop = (timeStamp) => {
   requestAnimationFrame(gameLoop); // recursive game loop
 
   //! TEST AREA
-  console.log("player X pos and velocity", player.x, player.velocityX);
-  console.log("player Y pos and velocity", player.y, player.velocityY);
+  // console.log("player X pos and velocity", player.x, player.velocityX);
+  // console.log("player Y pos and velocity", player.y, player.velocityY);
 };
 
 gameLoop(timeStamp);
