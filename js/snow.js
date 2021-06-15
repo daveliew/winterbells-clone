@@ -1,3 +1,4 @@
+/** @type {HTMLCanvasElement} */
 //* background image
 const bgCanvas = document.getElementById("background-layer");
 const bgCtx = bgCanvas.getContext("2d");

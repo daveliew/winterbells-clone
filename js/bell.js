@@ -1,3 +1,4 @@
+/** @type {HTMLCanvasElement} */
 const canvas = document.getElementById("game-layer");
 const ctx = canvas.getContext("2d");
 

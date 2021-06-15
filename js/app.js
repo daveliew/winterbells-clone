@@ -192,9 +192,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     draw() {
       ctx.fillStyle = "blue";
       ctx.fillRect(this.x, this.y, this.width, this.height);
-      if (this.jumping === true) {
-        bgCtx.drawImage(img, 0, this.parallax, 800, 600); //! COULD THIS BE IT??
-      }
+      // if (this.jumping === true) {
+      //   bgCtx.drawImage(img, 0, this.parallax, 800, 600); //! COULD THIS BE IT??
+      // }
     }
   }
 
