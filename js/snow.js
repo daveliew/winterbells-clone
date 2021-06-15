@@ -14,8 +14,8 @@ bgCanvas.height = window.innerHeight;
 //* snow layer
 const snowCanvas = document.getElementById("snow-layer");
 const snowCtx = snowCanvas.getContext("2d");
-snowCanvas.width = window.innerWidth;
-snowCanvas.height = window.innerHeight;
+snowCanvas.width = bgCanvas.width;
+snowCanvas.height = bgCanvas.height;
 
 let hue = 0;
 

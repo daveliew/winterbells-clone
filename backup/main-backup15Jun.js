@@ -3,22 +3,26 @@
 //* core game build
 //? add viewport + fix bg image
 //? add condition that after first bell is caught, gameover sequence triggered
-//* finesse
-//? add music
+//? show score
 //? add sprites
+//? add bird to double bonus
+//* optimisation
 //? create max width and height
 //? create background image
-//* optimisation
 //? add delta time
+//? save max score
 //? add pre-rendering for main character
 //? ==> https://www.html5rocks.com/en/tutorials/canvas/performance/
-//? ==> https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
+//? ==> https://developer.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
 //? multiple js files to better read code
 //? refactor code --> clear all //? stuff.
 
-//! DATA
+//* ***DATA*** *//
 const canvas = document.getElementById("game-layer");
 const ctx = canvas.getContext("2d");
+
+const audioObj = new Audio("/assets/winterbells.mp3");
+audioObj.play();
 
 const GAME_WIDTH = 32 * 15;
 const GAME_HEIGHT = 32 * 20;
@@ -31,6 +35,7 @@ const SCREEN_X_MID = Math.floor(canvas.width / 2);
 const gravityPull = 3;
 const collisionDistance = 20;
 const difficulty = 3;
+const framesPerSnow = 200;
 
 const numBells = 10; //* change number of bells
 const bellSpacing = 100;
@@ -39,18 +44,19 @@ const minBellHeight = playerJump - bellSize;
 const bellTranslation = 100;
 
 let playerActivated = false;
-let gameNotStarted = true;
+
 let mouseClick = false;
 let gameFrame = 0;
 let lowestBell = {}; //! is this useless?
 
 let playerHeight = 0;
 let crossedHeight = false;
+let score = 0;
 
-// window.addEventListener("resize", () => {
-//   canvas.width = window.innerWidth;
-//   canvas.height = window.innerHeight;
-// });
+const mouse = {
+  x: canvas.width / 2,
+  y: canvas.height / 2,
+};
 
 //* ***MAIN PROGRAMME*** *//
 
@@ -90,12 +96,11 @@ const generateBell = (posY) => {
   let prevY = posY;
   while (bellArray.length < numBells) {
     let newX = randBellX();
-    //! trying to slow down bell production
     let bell = new Bell(bellXpos[newX], prevY);
     prevY -= bellSpacing;
     lowestBell = bell;
     bellArray.push(bell);
-    console.log("***BELL CREATED***", bell);
+    // console.log("***BELL CREATED***", bell);
   }
 };
 
@@ -108,18 +113,13 @@ const bellRender = (arr) => {
     arr[i].update();
     arr[i].draw();
     hasCollided(player, arr[i]);
-    if (
-      arr[i].collided === true ||
-      arr[i].y > canvas.height
-      // || arr[i].y - player.y > canvas.height / 2 //! buggy! Want to make a way that bell disappears if it's too far away
-    ) {
-      //! key condition
-      arr.splice(i, 1); // remove bell from array when it leaves screen
+    if (arr[i].collided === true || arr[i].y > canvas.height - 100) {
+      arr.splice(i, 1); // remove bell from array to manage total #objects
     }
   }
-  // ! Genrate new bells based on length
-  if (arr.length < 3) {
-    generateBell(player.y - 300);
+  const minBells = Math.ceil(numBells / 2);
+  if (arr.length <= minBells) {
+    generateBell(arr[0].y - bellSpacing * (minBells - 1));
   }
 
   crossedHeight = false; // reset trigger for bell translation
@@ -131,51 +131,47 @@ class Player {
   constructor() {
     this.width = 20;
     this.height = 20;
-    this.mass = 20;
+    this.mass = 10; //?
     this.x = canvas.width / 2;
     this.y = canvas.height - this.height; //! testing
-    this.velocityX = 5;
-    this.velocityY = -10; //? what is a good boost rate?
-    this.frame = 0;
-    this.jumping = false; //? not using this well, try to obtimise
-    this.secondsPassed = 0;
-    this.collided = false;
-    this.parallax = this.y;
-    this.score = 0;
+    this.velocityX = 4;
+    this.velocityY = -8; //? what is a good boost rate?
+    this.jumping = false;
+    this.collided = false; //? useless?
+    this.parallax = this.y; //? useless?
   }
-  update(secondsPassed) {
+  update() {
     if (!playerActivated) {
       return;
     } // prevent left right movement till screen is clicked.
 
     if (mouseClick && this.jumping === false) {
-      // this.y += 50 * secondsPassed;
-      this.y -= 50; //! change to seconds
+      // this.y += 50 * secondsPassed;  //! change to seconds
+      this.y += -100;
+
       mouseClick = false; //! testing
       this.jumping = true;
-      this.parallax = GAME_HEIGHT - this.y;
-      this.y += this.velocityY * this.mass; //! balance out player falling. feels too floaty
+      this.parallax = GAME_HEIGHT - this.y; //? useless?
     }
 
     if (this.collided) {
-      this.y -= 50;
+      this.y += -50;
       this.collided = false;
     }
 
     //? trying this method to "calibrate mouse move to x move". wrap this in condition?
 
     let dx = Math.floor((mouse.x - this.x) / this.velocityX);
-
     //* scale down dx
     if (dx > this.velocityX) {
       dx /= this.velocityX;
       dx = Math.round(dx);
     }
     this.x += dx;
+
     this.y += gravityPull;
-    // this.velocityY = 0;
     // this.y += this.velocityY; //! major bug around here
-    // this.velocityY *= 0.9;
+    this.velocityY *= 0.9;
 
     //*prevent player from leaving canvas
     if (this.x < 0) {
@@ -198,21 +194,12 @@ class Player {
     // }
   }
   addScore() {
-    this.score += 1;
-    console.log("Player score", this.score);
+    score += 1;
+    console.log("Player score", score);
   }
 }
 
-//* Initialize game *//
-//* Mouse Movements
-
-const mouse = {
-  //? centres mouse in canvas mid, not sure if necessary?
-  x: canvas.width / 2,
-  y: canvas.height / 2,
-};
-
-//* passes mouse click coordinates to global variable
+//* ***EVENT LISTENERS*** *//
 canvas.addEventListener("mousemove", (event) => {
   mouse.x = event.x;
   mouse.y = event.y;
@@ -224,10 +211,7 @@ canvas.addEventListener("mousedown", (event) => {
   mouseClick = true;
   player.jumping = false;
   console.log(event + "detected");
-  // if (gameNotStarted) {
-  //   generateBell(player.y);
-  //   gameNotStarted = false;
-  // }
+
   //? find a way to remove mousedown after click so that player must use bells to jump
   //? https://www.geeksforgeeks.org/javascript-removeeventlistener-method-with-examples/
 });
@@ -245,7 +229,6 @@ const hasCollided = (player, bell) => {
     Math.pow(player.x - bell.x, 2) + Math.pow(player.y - bell.y, 2)
   );
   if (distance <= collisionDistance) {
-    console.log("touched");
     player.collided = true;
     bell.collided = true;
     player.y -= playerJump;
@@ -270,16 +253,12 @@ const gameLoop = (timeStamp) => {
 
   if (playerHeight > highestHeight) {
     highestHeight = playerHeight;
-    console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
+    // console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
     crossedHeight = true;
     if (highestHeight >= 2 && highestHeight % 2 === 0 && crossedHeight) {
       crossedHeight = false;
       console.log("CROSSED HEIGHT!");
     }
-    // if (crossedHeight === 4 && playerHeight === 5) {
-    //   crossedHeight = 3;
-    //   playerHeight = 3;
-    // } //! buggy
   }
 
   //* time calculation
@@ -300,9 +279,8 @@ const gameLoop = (timeStamp) => {
   snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
   snowCtx.fillStyle = "rgba(0,0,0,0.1)"; // rectangle that covers screen over and over
   snowRender(snow.snowArray);
-  if (gameFrame % 200 === 0) {
-    //only generate snow every 200 frames
-    generateSnow();
+  if (gameFrame % framesPerSnow === 0) {
+    generateSnow(); //only generate snow every 200 frames
   }
 
   //* Incrementors + resets

@@ -2,7 +2,7 @@
 // const canvas = document.getElementById("game-layer");
 // const ctx = canvas.getContext("2d");
 
-const bellSize = 10;
+const bellSize = 15;
 const numBellCols = 7;
 const bellArray = [];
 
@@ -23,12 +23,12 @@ class Bell {
     this.color = "yellow";
     this.size = bellSize;
     this.collided = false;
-    this.moving = true;
+    // this.moving = true; //? optimise
   }
   update() {
     //! falling bell generates if player has not touched any bells.
     //! bells will stop when player collides
-    if (this.moving) {
+    if (score === 0) {
       this.velocityY = 0.5;
       this.x += this.velocityX;
       this.y += this.velocityY;
@@ -40,7 +40,7 @@ class Bell {
   draw() {
     ctx.fillStyle = this.color;
     ctx.beginPath(); //* like a paint path
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI);
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
   }
 }
