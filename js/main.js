@@ -13,12 +13,14 @@
 //? create background image
 //* optimisation
 //? add pre-rendering for main character
+//? ==> https://www.html5rocks.com/en/tutorials/canvas/performance/
+//? ==> https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
 //? multiple js files to better read code
 //? refactor code --> clear all //? stuff.
 
 //! DATA
-const GAME_WIDTH = 32 * 15;
-const GAME_HEIGHT = 32 * 20;
+const GAME_WIDTH = 32 * 20;
+const GAME_HEIGHT = 32 * 25;
 
 const gravityPull = 0.7;
 const collisionDistance = 20;
@@ -32,7 +34,7 @@ let playerActivated = false;
 let mouseClick = false;
 let collision = false;
 let gameFrame = 0;
-let score = 0;
+let lowestBell = {};
 
 //! FIX this
 let movingSpeed = 50;
@@ -51,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const colWidth = Math.floor(canvas.width / numBellCols);
   const SCREEN_X_MID = Math.floor(canvas.width / 2);
 
+  //* Generate bell
   const bellXpos = [
     SCREEN_X_MID - colWidth * 3,
     SCREEN_X_MID - colWidth * 2,
@@ -61,58 +64,54 @@ document.addEventListener("DOMContentLoaded", () => {
     SCREEN_X_MID + colWidth * 3,
   ];
 
-  //* Generate Bell
-  //! BELLS ONLY FALL UP TO A CERTAIN Y, then they are static => based on position.
-  //? BUG - Bells will generate if canvas Y not adjusted to centre on Player.
+  //? refactor this to Simon's suggestion if there's time --> next bell takes a random pos from the array of possibilities
+  // [ - - - X - - -] 5
+  // [ - X - - - - -] 4
+  // [ - - - X - - -] 3
+  // [ - - - - - X -] 2
+  // [ - - X - - - -] 1
+  let prevX = 0;
+  let currX = Math.floor(bellXpos.length / 2); //3, start at centre
 
-  class Bell {
-    constructor(posX, posY) {
-      this.x = posX;
-      this.y = posY;
-      this.velocityX = 0;
-      this.velocityY = 0;
-      this.color = "white";
-      this.size = bellSize;
-      this.collided = false;
+  const randBellX = () => {
+    prevX = currX;
+    while (
+      currX === prevX || //prevents a random bell from having same X as a previous bell
+      currX - prevX <= -difficulty || //prevents a bell from being too far from a current bell
+      currX - prevX >= difficulty
+    ) {
+      currX = Math.floor(Math.random() * bellXpos.length);
     }
-    update() {
-      //! falling bell generates if player has not touched any bells.
-      //! bells will stop when player collides
-      // if (this.y > canvas.height - 600)
-      if (this.y >= 0)
-        //! falling bells test //? what's optimal?
-        this.velocityY += Math.round(gravityPull) / 20;
-      this.x += this.velocityX;
-      this.y += this.velocityY;
+    return currX;
+  };
 
-      this.velocityX *= 0.9;
-      this.velocityY *= 0.9;
-      this.hasCollided(); // check for collision with Player
+  const generateBell = (posY) => {
+    let prevY = -100; //! does this work?
+    while (bellArray.length < numBells) {
+      let newX = randBellX();
+      //! trying to slow down bell production
+      let bell = new Bell(bellXpos[newX], prevY);
+      prevY += bellSpacing;
+      bellArray.push(bell);
+      console.log("***BELL CREATED***", bell);
     }
-    draw() {
-      ctx.fillStyle = this.color;
-      ctx.beginPath(); //* like a paint path
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI);
-      ctx.fill();
-    }
-    hasCollided() {
-      //? add collision detection and add y velocity to player
-      const distance = Math.sqrt(
-        Math.pow(player.x - this.x, 2) + Math.pow(player.y - this.y, 2)
-      );
-      if (distance <= collisionDistance) {
-        console.log("touched");
-        this.collided = true;
-        player.y -= playerJump;
-        this.addScore();
+  };
+
+  const bellRender = (arr) => {
+    lowestBell = arr[0]; //* For collision
+    for (let i = 0; i < arr.length; i++) {
+      arr[i].update();
+      arr[i].draw();
+      if (
+        arr[i].collided === true ||
+        arr[i].y > canvas.height ||
+        arr[i].y - player.y > canvas.height / 2 //! buggy! Want to make a way that bell disappears if it's too far away
+      ) {
+        //! key condition
+        arr.splice(i, 1); // remove bell from array when it leaves screen
       }
-      return (collision = true);
     }
-    addScore() {
-      score += 1;
-      console.log("Player Score", score);
-    }
-  }
+  };
 
   //* Generate Player
   //? use a jumping method inside
@@ -130,11 +129,13 @@ document.addEventListener("DOMContentLoaded", () => {
       this.secondsPassed = 0;
       this.collision = false;
       this.parallax = this.y;
+      this.score = 0;
     }
     update(secondsPassed) {
       if (!playerActivated) {
         return;
       } // prevent left right movement till screen is clicked.
+
       if (mouseClick && this.jumping === false) {
         // this.y += 50 * secondsPassed;
         this.y -= 50; //! change to seconds
@@ -177,13 +178,16 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.fillStyle = "blue";
       ctx.fillRect(this.x, this.y, this.width, this.height);
       // if (this.jumping === true) {
-      //   bgCtx.drawImage(img, 0, this.parallax, 800, 600); //! COULD THIS BE IT??
+      //   bgCtx.drawImage(img, 0, this.parallax, 800, 600); //! COULD THIS BE IT?? Move background relative to player based on Y conditions
       // }
+    }
+    addScore() {
+      this.score += 1;
+      console.log("Player score", score);
     }
   }
 
-  const player = new Player();
-
+  //* Initialize game *//
   //* Mouse Movements
 
   const mouse = {
@@ -208,69 +212,29 @@ document.addEventListener("DOMContentLoaded", () => {
     //? https://www.geeksforgeeks.org/javascript-removeeventlistener-method-with-examples/
   });
 
-  //* Generate bell
-  //? refactor this to Simon's suggestion if there's time --> next bell takes a random pos from the array of possibilities
-  // [ - - - X - - -] 5
-  // [ - X - - - - -] 4
-  // [ - - - X - - -] 3
-  // [ - - - - - X -] 2
-  // [ - - X - - - -] 1
-  let prevX = 0;
-  let currX = Math.floor(bellXpos.length / 2); //3, start at centre
-
-  const randBellX = () => {
-    prevX = currX;
-    while (
-      currX === prevX || //prevents a random bell from having same X as a previous bell
-      currX - prevX <= -difficulty || //prevents a bell from being too far from a current bell
-      currX - prevX >= difficulty
-    ) {
-      currX = Math.floor(Math.random() * bellXpos.length);
-    }
-    return currX;
-  };
-
-  const generateBell = (posY) => {
-    let prevY = -100; //! does this work?
-    while (bellArray.length < numBells) {
-      let newX = randBellX();
-      //! trying to slow down bell production
-      let bell = new Bell(bellXpos[newX], prevY);
-      prevY += bellSpacing;
-      bellArray.push(bell);
-      console.log("***BELL CREATED***", bell);
-    }
-  };
-
-  const bellRender = (arr) => {
-    for (let i = 0; i < arr.length; i++) {
-      arr[i].update();
-      arr[i].draw();
-      if (
-        arr[i].collided === true ||
-        arr[i].y > canvas.height ||
-        arr[i].y - player.y > canvas.height / 2 //! buggy! Want to make a way that bell disappears if it's too far away
-      ) {
-        //! key condition
-        arr.splice(i, 1); // remove bell from array when it leaves screen
-      }
-    }
-  };
-
   // const stopGameLoop = () => {
   //   window.cancelAnimationFrame(requestAnimationFrameId);
   // };
 
   generateSnow();
+  const player = new Player();
 
-  // let lastFrame = performance.now();
-  // //! study this more
-  // if (timeStamp < lastFrame + 1000 / 60) return;
-  // let dt = (timeStamp - lastFrame) / 1000;
-  // lastFrame = timeStamp;
-  // console.log(dt);
+  //* Collision Detection Function
+  const hasCollided = (player, lowestBell) => {
+    const distance = Math.sqrt(
+      Math.pow(player.x - lowestBell.x, 2) +
+        Math.pow(player.y - lowestBell.y, 2)
+    );
+    if (distance <= collisionDistance) {
+      console.log("touched");
+      player.collided = true;
+      player.y -= playerJump;
+      player.addScore();
+      return true;
+    }
+  };
 
-  //*Handle Dynamic Frames using Delta Time
+  //*Handle Dynamic Frames using timeStamp (research Delta Time)
   let secondsPassed,
     oldTimeStamp,
     timeStamp = 0;
@@ -281,16 +245,13 @@ document.addEventListener("DOMContentLoaded", () => {
     //* reset variables for next frame phase
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     collision = false;
-    //
 
     //* time calculation
-
     secondsPassed = (timeStamp - oldTimeStamp) / 1000;
     secondsPassed = Math.min(secondsPassed, 0.1);
     oldTimeStamp = timeStamp;
 
     //* bell code
-
     generateBell();
     //! think of when to generate bell
     // if (score >= 5) {
@@ -301,19 +262,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //* player code
     player.update(secondsPassed);
-
     player.draw();
+    lowestBell = bellArray[0];
+    hasCollided(player, lowestBell);
 
     //* snow code
     snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
     snowCtx.fillStyle = "rgba(0,0,0,0.1)"; // rectangle that covers screen over and over
     snowRender(snow.snowArray);
     if (gameFrame % 200 === 0) {
+      //only generate snow every 200 frames
       generateSnow();
     }
 
     //* Incrementors + resets
-    hue += 2;
+    hue += 2; // change snow colour
     gameFrame++;
     collision = false;
 
