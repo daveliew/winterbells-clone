@@ -30,7 +30,7 @@ canvas.height = GAME_HEIGHT;
 const colWidth = Math.floor(canvas.width / numBellCols);
 const SCREEN_X_MID = Math.floor(canvas.width / 2);
 
-const gravityPull = 0.7;
+const gravityPull = 2;
 const collisionDistance = 20;
 const difficulty = 3;
 
@@ -38,10 +38,11 @@ const numBells = 10; //* change number of bells
 const bellSpacing = 100;
 const playerJump = bellSpacing * 1.3;
 const minBellHeight = playerJump - bellSize;
+const bellTranslation = 100;
 
 let playerActivated = false;
+let gameNotStarted = true;
 let mouseClick = false;
-let collision = false;
 let gameFrame = 0;
 let lowestBell = {}; //! is this useless?
 
@@ -88,12 +89,13 @@ const randBellX = () => {
 };
 
 const generateBell = (posY) => {
-  let prevY = canvas.height - minBellHeight;
+  let prevY = posY;
   while (bellArray.length < numBells) {
     let newX = randBellX();
     //! trying to slow down bell production
     let bell = new Bell(bellXpos[newX], prevY);
     prevY -= bellSpacing;
+    lowestBell = bell;
     bellArray.push(bell);
     console.log("***BELL CREATED***", bell);
   }
@@ -101,22 +103,28 @@ const generateBell = (posY) => {
 
 const bellRender = (arr) => {
   for (let i = 0; i < arr.length; i++) {
-    // if (crossedHeight) {
-    //   arr[i].y = arr[i].y + 200;
-    //   console.log("we're going places!");
-    // }
+    if (crossedHeight) {
+      arr[i].y = arr[i].y + bellTranslation;
+      console.log("we're going places!");
+    }
     arr[i].update();
     arr[i].draw();
     hasCollided(player, arr[i]);
     if (
       arr[i].collided === true ||
-      arr[i].y > canvas.height ||
-      arr[i].y - player.y > canvas.height / 2 //! buggy! Want to make a way that bell disappears if it's too far away
+      arr[i].y > canvas.height
+      // || arr[i].y - player.y > canvas.height / 2 //! buggy! Want to make a way that bell disappears if it's too far away
     ) {
       //! key condition
       arr.splice(i, 1); // remove bell from array when it leaves screen
     }
   }
+  console.log("BELL ARRAY LENGTH", arr.length);
+  if (arr.length < 5) {
+    generateBell(player.y - 300);
+  }
+
+  crossedHeight = false; // reset trigger for bell translation
 };
 
 //* Generate Player
@@ -133,7 +141,7 @@ class Player {
     this.frame = 0;
     this.jumping = false; //? not using this well, try to obtimise
     this.secondsPassed = 0;
-    this.collision = false;
+    this.collided = false;
     this.parallax = this.y;
     this.score = 0;
   }
@@ -145,11 +153,15 @@ class Player {
     if (mouseClick && this.jumping === false) {
       // this.y += 50 * secondsPassed;
       this.y -= 50; //! change to seconds
-      // mouseClick = false;//! testing
-      console.log("***player jump detected in player obj***");
+      mouseClick = false; //! testing
       this.jumping = true;
       this.parallax = GAME_HEIGHT - this.y;
       this.y += this.velocityY * this.mass; //! balance out player falling. feels too floaty
+    }
+
+    if (this.collided) {
+      this.y -= 50;
+      this.collided = false;
     }
 
     //? trying this method to "calibrate mouse move to x move". wrap this in condition?
@@ -162,7 +174,7 @@ class Player {
       dx = Math.round(dx);
     }
     this.x += dx;
-    this.y += 1 + gravityPull / 2;
+    this.y += gravityPull;
     // this.velocityY = 0;
     // this.y += this.velocityY; //! major bug around here
     // this.velocityY *= 0.9;
@@ -214,6 +226,10 @@ canvas.addEventListener("mousedown", (event) => {
   mouseClick = true;
   player.jumping = false;
   console.log(event + "detected");
+  // if (gameNotStarted) {
+  //   generateBell(player.y);
+  //   gameNotStarted = false;
+  // }
   //? find a way to remove mousedown after click so that player must use bells to jump
   //? https://www.geeksforgeeks.org/javascript-removeeventlistener-method-with-examples/
 });
@@ -221,10 +237,9 @@ canvas.addEventListener("mousedown", (event) => {
 // const stopGameLoop = () => {
 //   window.cancelAnimationFrame(requestAnimationFrameId);
 // };
-
-generateSnow();
-generateBell();
 const player = new Player();
+generateSnow();
+generateBell(player.y - 100);
 
 //* Collision Detection Function
 const hasCollided = (player, bell) => {
@@ -244,8 +259,8 @@ const hasCollided = (player, bell) => {
 //*Handle Dynamic Frames using timeStamp (research Delta Time)
 let secondsPassed,
   oldTimeStamp,
-  timeStamp = 0;
-let canvasMarker = canvas.height;
+  timeStamp,
+  highestHeight = 0;
 
 //* *** GAME LOOP *** *//
 const gameLoop = (timeStamp) => {
@@ -253,10 +268,21 @@ const gameLoop = (timeStamp) => {
   //* reset variables for next frame phase
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  playerHeight = Math.floor(canvasMarker - player.y);
-  if (canvasMarker % 2 === 0) {
+  playerHeight = Math.floor((canvas.height - player.y) / 100);
+
+  if (playerHeight > highestHeight) {
+    highestHeight = playerHeight;
+    console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
     crossedHeight = true;
-    playerHeight = 0;
+    if (highestHeight % 2 === 0 && crossedHeight) {
+      crossedHeight = false;
+      highestHeight = 0;
+      console.log("CROSSED HEIGHT!");
+    }
+    // if (crossedHeight === 4 && playerHeight === 5) {
+    //   crossedHeight = 3;
+    //   playerHeight = 3;
+    // } //! buggy
   }
 
   //* time calculation
@@ -265,13 +291,7 @@ const gameLoop = (timeStamp) => {
   oldTimeStamp = timeStamp;
 
   //* bell code
-
   bellRender(bellArray);
-  //! think of when to generate bell
-  // if (score >= 5) {
-  //   generateBell();
-  //   console.log("Hold it ... calling in the calvary!");
-  // }
 
   //* player code
   player.update(secondsPassed);
@@ -291,9 +311,7 @@ const gameLoop = (timeStamp) => {
   //* Incrementors + resets
   hue += 2; // change snow colour
   gameFrame++;
-  crossedHeight = false;
-  canvasMarker = Math.floor(player.y / 100);
-  console.log(Math.floor(player.y / 100));
+
   requestAnimationFrame(gameLoop); // recursive game loop
 
   //! TEST AREA
