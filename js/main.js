@@ -232,9 +232,9 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     if (distance <= collisionDistance) {
       console.log("touched");
-      player.collision, (bell.collision = true);
+      player.collided = true;
+      bell.collided = true;
       player.y -= playerJump;
-      bellArray.splice(bell, 1);
       player.addScore();
       return true;
     }
@@ -250,10 +250,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // requestAnimationFrameId = window.requestAnimationFrame(gameLoop);
     //* reset variables for next frame phase
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    collision = false;
+
     playerHeight = Math.floor(GAME_HEIGHT - player.y);
     if (playerHeight % 200 === 0) {
       crossedHeight = true;
+      playerHeight = 0;
     }
 
     //* time calculation
@@ -288,7 +289,6 @@ document.addEventListener("DOMContentLoaded", () => {
     //* Incrementors + resets
     hue += 2; // change snow colour
     gameFrame++;
-    collision = false;
     crossedHeight = false;
 
     requestAnimationFrame(gameLoop); // recursive game loop
