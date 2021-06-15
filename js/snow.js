@@ -4,8 +4,9 @@ const bgCanvas = document.getElementById("background-layer");
 const bgCtx = bgCanvas.getContext("2d");
 bgCanvas.width = window.innerWidth;
 bgCanvas.height = window.innerHeight;
-const img = new Image();
-img.src = "../assets/maria-vojtovicova-snow.jpg";
+//! background image
+//const img = new Image();
+// img.src = "../assets/maria-vojtovicova-snow.jpg";
 
 // img.addEventListener("load", () => {});
 // img.src = "../assets/maria-vojtovicova-snow.jpg";
@@ -45,3 +46,16 @@ class Snow {
     // bgCtx.drawImage(img, 0, this.y, 800, 600); //! Endless scroller?
   }
 }
+
+const generateSnow = () => {
+  for (let i = 0; i < snow.amt; i++) {
+    snow.snowArray.push(new Snow());
+  }
+};
+
+const snowRender = (arr) => {
+  for (let i = 0; i < arr.length; i++) {
+    arr[i].update();
+    arr[i].draw();
+  }
+};

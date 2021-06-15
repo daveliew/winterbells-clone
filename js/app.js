@@ -17,15 +17,16 @@
 //? refactor code --> clear all //? stuff.
 
 //! DATA
-const GAME_WIDTH = 600;
-const GAME_HEIGHT = 800;
+const GAME_WIDTH = 32 * 15;
+const GAME_HEIGHT = 32 * 20;
 
 const gravityPull = 0.7;
 const collisionDistance = 20;
-
 const difficulty = 3;
+
+const numBells = 10; //! test
 const bellSpacing = 70;
-const playerJump = bellSpacing * 2;
+const playerJump = bellSpacing * 1.5;
 
 let playerActivated = false;
 let mouseClick = false;
@@ -34,14 +35,14 @@ let gameFrame = 0;
 let score = 0;
 
 //! FIX this
-//*Handle Dynamic Frames using Delta Time
-let secondsPassed,
-  oldTimeStamp,
-  timeStamp = 0;
 let movingSpeed = 50;
+// window.addEventListener("resize", () => {
+//   canvas.width = window.innerWidth;
+//   canvas.height = window.innerHeight;
+// });
 
-//* MAIN PROGRAMME *//
-document.addEventListener("DOMContentLoaded", function (event) {
+//* ***MAIN PROGRAMME*** *//
+document.addEventListener("DOMContentLoaded", () => {
   //* game layer
   const canvas = document.getElementById("game-layer");
   const ctx = canvas.getContext("2d");
@@ -60,24 +61,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
     SCREEN_X_MID + colWidth * 3,
   ];
 
-  window.addEventListener("resize", () => {
-    bg.width = SCREEN_WIDTH;
-    bg.height = SCREEN_HEIGHT;
-  });
-
-  const generateSnow = () => {
-    for (let i = 0; i < snow.amt; i++) {
-      snow.snowArray.push(new Snow());
-    }
-  };
-
-  const snowRender = (arr) => {
-    for (let i = 0; i < arr.length; i++) {
-      arr[i].update();
-      arr[i].draw();
-    }
-  };
-
   //* Generate Bell
   //! BELLS ONLY FALL UP TO A CERTAIN Y, then they are static => based on position.
   //? BUG - Bells will generate if canvas Y not adjusted to centre on Player.
@@ -95,8 +78,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     update() {
       //! falling bell generates if player has not touched any bells.
       //! bells will stop when player collides
-      if (this.y > canvas.height - 400)
-        //? what's optimal?
+      // if (this.y > canvas.height - 600)
+      if (this.y >= 0)
+        //! falling bells test //? what's optimal?
         this.velocityY += Math.round(gravityPull) / 20;
       this.x += this.velocityX;
       this.y += this.velocityY;
@@ -246,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     return currX;
   };
 
-  const generateBell = () => {
+  const generateBell = (posY) => {
     let prevY = -100; //! does this work?
     while (bellArray.length < numBells) {
       let newX = randBellX();
@@ -273,17 +257,34 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
   };
 
-  //* Animate / Game loop
+  // const stopGameLoop = () => {
+  //   window.cancelAnimationFrame(requestAnimationFrameId);
+  // };
 
   generateSnow();
 
+  // let lastFrame = performance.now();
+  // //! study this more
+  // if (timeStamp < lastFrame + 1000 / 60) return;
+  // let dt = (timeStamp - lastFrame) / 1000;
+  // lastFrame = timeStamp;
+  // console.log(dt);
+
+  //*Handle Dynamic Frames using Delta Time
+  let secondsPassed,
+    oldTimeStamp,
+    timeStamp = 0;
+
+  //* *** GAME LOOP *** *//
   const gameLoop = (timeStamp) => {
+    // requestAnimationFrameId = window.requestAnimationFrame(gameLoop);
     //* reset variables for next frame phase
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     collision = false;
     //
 
     //* time calculation
+
     secondsPassed = (timeStamp - oldTimeStamp) / 1000;
     secondsPassed = Math.min(secondsPassed, 0.1);
     oldTimeStamp = timeStamp;
@@ -291,6 +292,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
     //* bell code
 
     generateBell();
+    //! think of when to generate bell
+    // if (score >= 5) {
+    //   generateBell();
+    //   console.log("Hold it ... calling in the calvary!");
+    // }
     bellRender(bellArray);
 
     //* player code
