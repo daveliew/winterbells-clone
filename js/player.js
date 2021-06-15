@@ -13,7 +13,7 @@ class Player {
     this.mass = 10; //?
     this.x = canvas.width / 2;
     this.y = canvas.height - this.height; //! testing
-    this.velocityX = 1;
+    this.velocityX = 3;
     this.velocityY = -8; //? what is a good boost rate?
     this.jumping = false;
     this.collided = false; //? useless?
@@ -39,18 +39,20 @@ class Player {
     }
 
     //? trying this method to "calibrate mouse move to x move". wrap this in condition?
-    let dx = Math.floor((mouse.x - this.x) / this.velocityX);
+    let dx = Math.floor(mouse.x - this.x);
     // //* scale down dx
-    // if (dx > this.velocityX) {
-    //   dx /= this.velocityX;
-    //   dx = Math.round(dx);
-    // }
+    if (dx > this.velocityX) {
+      dx /= this.velocityX;
+      dx = Math.round(dx);
+    }
+
     this.x += dx;
+    // console.log("dx", dx);
+    // console.log("playerx", this.x);
 
     // this.y += movingSpeed * secondsPassed;
     this.y += gravityPull * 2;
-    // this.y += this.velocityY; //! major bug around here
-    this.velocityY *= 0.8;
+    this.velocityY *= 0.9;
 
     //*prevent player from leaving canvas
     if (this.x < 0) {
@@ -69,7 +71,7 @@ class Player {
     ctx.fillStyle = "blue";
     ctx.fillRect(this.x, this.y, this.width, this.height);
     // if (this.jumping === true) {
-    //   bgCtx.drawImage(img, 0, this.parallax, 800, 600); //! COULD THIS BE IT?? Move background relative to player based on Y conditions
+    // bgCtx.drawImage(img, 0, this.parallax, 800, 600)}; //! COULD THIS BE IT?? Move background relative to player based on Y conditions
     // }
   }
   addScore() {

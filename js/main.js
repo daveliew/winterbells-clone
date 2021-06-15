@@ -16,6 +16,7 @@
 //? ==> https://developer.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
 //? multiple js files to better read code
 //? refactor code --> clear all //? stuff.
+//! tune this (BELL)
 
 //* ***DATA*** *//
 const canvas = document.getElementById("game-layer");
@@ -29,19 +30,18 @@ const GAME_HEIGHT = 800;
 canvas.width = GAME_WIDTH;
 canvas.height = GAME_HEIGHT;
 
-const colWidth = Math.floor(canvas.width / numBellCols);
+const colWidth = Math.floor((canvas.width * 0.9) / numBellCols);
 const SCREEN_X_MID = Math.floor(canvas.width / 2);
 
 const gravityPull = 3;
-const collisionDistance = 20;
 const difficulty = 3;
 const framesPerSnow = 200;
 
-const numBells = 10; //* change number of bells
+const numBells = 15; //* change number of bells
 const bellSpacing = 100;
-const playerJump = bellSpacing * 1.3;
+const playerJump = bellSpacing * 1.2;
+const playerJumpVelocity = -8;
 const minBellHeight = playerJump - bellSize;
-const bellTranslation = 100;
 
 let playerActivated = false;
 
@@ -105,8 +105,11 @@ const generateBell = (posY) => {
 };
 
 const bellRender = (arr) => {
+  const bellTranslation = bellSpacing;
+
   for (let i = 0; i < arr.length; i++) {
-    if (crossedHeight) {
+    if (crossedHeight || arr[2].y < canvas.height / 3) {
+      //! tune this (BELL)
       arr[i].y = arr[i].y + bellTranslation;
       console.log("we're going places!");
     }
@@ -119,7 +122,7 @@ const bellRender = (arr) => {
   }
   const minBells = Math.floor(numBells / 2);
   if (arr.length <= minBells) {
-    generateBell(arr[minBells - 1].y - bellSpacing * minBells);
+    generateBell(arr[0].y - bellSpacing * minBells);
   }
 
   crossedHeight = false; // reset trigger for bell translation
@@ -127,13 +130,17 @@ const bellRender = (arr) => {
 
 //* Collision Detection Function *//
 const hasCollided = (player, bell) => {
+  const collisionDistance = player.width + bell.size;
+
   const distance = Math.sqrt(
     Math.pow(player.x - bell.x, 2) + Math.pow(player.y - bell.y, 2)
   );
-  if (distance <= collisionDistance) {
+
+  if (distance < collisionDistance) {
     player.collided = true;
     bell.collided = true;
-    player.y -= playerJump;
+    player.y = playerJump;
+    player.velocityY = playerJumpVelocity;
     player.addScore();
     return true;
   }
@@ -150,6 +157,7 @@ canvas.addEventListener("mousedown", (event) => {
   playerActivated = true;
   mouseClick = true;
   player.jumping = false;
+  player.velocityY = playerJumpVelocity;
   console.log(event + "detected");
 
   //? find a way to remove mousedown after click so that player must use bells to jump
@@ -163,7 +171,7 @@ canvas.addEventListener("mousedown", (event) => {
 //* *** INITIALIZE GAME  *** *//
 const player = new Player();
 generateSnow();
-generateBell(player.y - 100);
+generateBell(player.y - canvas.height / 3);
 
 //*Handle Dynamic Frames using timeStamp (research Delta Time)
 let secondsPassed,
@@ -190,7 +198,11 @@ const gameLoop = (timeStamp) => {
     highestHeight = playerHeight;
     // console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
     crossedHeight = true;
-    if (highestHeight >= 2 && highestHeight % 2 === 0 && crossedHeight) {
+    if (
+      highestHeight >= 2 &&
+      (highestHeight % 2 === 0 || highestHeight % 3 === 0)
+    ) {
+      //! tune this
       crossedHeight = false;
       console.log("CROSSED HEIGHT!");
     }
@@ -207,7 +219,7 @@ const gameLoop = (timeStamp) => {
 
   //* snow code
   snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
-  snowCtx.fillStyle = "rgba(0,0,0,0.1)"; // rectangle that covers screen over and over
+  snowCtx.fillStyle = "rgba(40,48,56,0.25)";
   snowRender(snow.snowArray);
   if (gameFrame % framesPerSnow === 0) {
     generateSnow(); //only generate snow every 200 frames
@@ -220,8 +232,8 @@ const gameLoop = (timeStamp) => {
   requestAnimationFrame(gameLoop); // recursive game loop
 
   //! TEST AREA
-
-  console.log("player y pos and velocity", player.y, player.velocityY);
+  console.log("player X pos and velocity", player.x, player.velocityX);
+  console.log("player Y pos and velocity", player.y, player.velocityY);
 };
 
 gameLoop(timeStamp);
