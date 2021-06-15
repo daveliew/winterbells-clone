@@ -1,6 +1,6 @@
 /** @type {HTMLCanvasElement} */
-const canvas = document.getElementById("game-layer");
-const ctx = canvas.getContext("2d");
+// const canvas = document.getElementById("game-layer");
+// const ctx = canvas.getContext("2d");
 
 const bellSize = 10;
 const numBellCols = 7;
