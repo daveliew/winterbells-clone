@@ -41,5 +41,6 @@ class Bell {
     ctx.fillStyle = this.color;
     ctx.beginPath(); //* like a paint path
     ctx.arc(this.x, this.y, this.size, 0, Math.PI);
+    ctx.fill();
   }
 }

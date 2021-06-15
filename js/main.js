@@ -19,8 +19,8 @@
 //? refactor code --> clear all //? stuff.
 
 //! DATA
-const GAME_WIDTH = 32 * 20;
-const GAME_HEIGHT = 32 * 25;
+const GAME_WIDTH = 32 * 15;
+const GAME_HEIGHT = 32 * 20;
 
 const gravityPull = 0.7;
 const collisionDistance = 20;
@@ -86,22 +86,22 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const generateBell = (posY) => {
-    let prevY = -100; //! does this work?
+    let prevY = canvas.height - 200; //! does this work?
     while (bellArray.length < numBells) {
       let newX = randBellX();
       //! trying to slow down bell production
       let bell = new Bell(bellXpos[newX], prevY);
-      prevY += bellSpacing;
+      prevY -= bellSpacing;
       bellArray.push(bell);
       console.log("***BELL CREATED***", bell);
     }
   };
 
   const bellRender = (arr) => {
-    lowestBell = arr[0]; //* For collision
     for (let i = 0; i < arr.length; i++) {
       arr[i].update();
       arr[i].draw();
+      hasCollided(player, arr[i]);
       if (
         arr[i].collided === true ||
         arr[i].y > canvas.height ||
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     addScore() {
       this.score += 1;
-      console.log("Player score", score);
+      console.log("Player score", this.score);
     }
   }
 
@@ -217,18 +217,19 @@ document.addEventListener("DOMContentLoaded", () => {
   // };
 
   generateSnow();
+  generateBell();
   const player = new Player();
 
   //* Collision Detection Function
-  const hasCollided = (player, lowestBell) => {
+  const hasCollided = (player, bell) => {
     const distance = Math.sqrt(
-      Math.pow(player.x - lowestBell.x, 2) +
-        Math.pow(player.y - lowestBell.y, 2)
+      Math.pow(player.x - bell.x, 2) + Math.pow(player.y - bell.y, 2)
     );
     if (distance <= collisionDistance) {
       console.log("touched");
       player.collided = true;
       player.y -= playerJump;
+      bellArray.splice(bell, 1);
       player.addScore();
       return true;
     }
@@ -252,19 +253,19 @@ document.addEventListener("DOMContentLoaded", () => {
     oldTimeStamp = timeStamp;
 
     //* bell code
-    generateBell();
+
+    bellRender(bellArray);
     //! think of when to generate bell
     // if (score >= 5) {
     //   generateBell();
     //   console.log("Hold it ... calling in the calvary!");
     // }
-    bellRender(bellArray);
 
     //* player code
     player.update(secondsPassed);
     player.draw();
-    lowestBell = bellArray[0];
-    hasCollided(player, lowestBell);
+    // lowestBell = bellArray[0];
+    // hasCollided(player, lowestBell); //! think about which bell it is later
 
     //* snow code
     snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
@@ -283,6 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(gameLoop); // recursive game loop
 
     //! TEST AREA
+
     // console.log("player y pos and velocity", player.y, player.velocityY);
   };
 
