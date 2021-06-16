@@ -34,12 +34,14 @@ class Player {
     }
 
     if (this.collided) {
-      this.velocityY += -100;
+      this.velocityY += -10; //! TUNE
+      this.y += -50;
       this.collided = false;
     }
 
     //? trying this method to "calibrate mouse move to x move". wrap this in condition?
-    let dx = Math.floor(mouse.x - this.x);
+    let dx = Math.round(Math.floor(mouse.x - this.x) / this.velocityX);
+    console.log(dx);
     //* scale down dx
     if (dx > this.velocityX) {
       dx /= this.velocityX;
@@ -58,8 +60,8 @@ class Player {
     //*prevent player from leaving canvas
     if (this.x < 0) {
       this.x = 0;
-    } else if (this.x + this.width > canvas.width) {
-      this.x = canvas.width - this.width;
+    } else if (this.x + this.width > GAME_WIDTH) {
+      this.x = GAME_WIDTH - this.width;
     }
 
     if (this.y >= canvas.height - this.height) {
@@ -72,7 +74,7 @@ class Player {
     ctx.fillStyle = "blue";
     ctx.fillRect(this.x, this.y, this.width, this.height);
     // if (this.jumping === true) {
-    // bgCtx.drawImage(img, 0, this.parallax, 800, 600)}; //! COULD THIS BE IT?? Move background relative to player based on Y conditions
+    // bgCtx.drawImage(img, 0, this.parallax, 800, 600)}; //! TO TEST: Move background relative to player based on Y conditions
     // }
   }
   addScore() {

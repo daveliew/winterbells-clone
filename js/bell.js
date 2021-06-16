@@ -20,14 +20,14 @@ class Bell {
   update() {
     //! falling bell generates if player has not touched any bells.
     //! bells will stop when player collides
-    if (score === 0) {
-      this.velocityY = 0.5;
-      this.x += this.velocityX;
-      this.y += this.velocityY;
+    // if (score === 0) {
+    this.velocityY = 0.5;
+    this.x += this.velocityX;
+    this.y += this.velocityY;
 
-      this.velocityX *= 0.9;
-      this.velocityY *= 0.9;
-    }
+    this.velocityX *= 0.9;
+    this.velocityY *= 0.9;
+    // }
   }
   draw() {
     ctx.fillStyle = this.color;

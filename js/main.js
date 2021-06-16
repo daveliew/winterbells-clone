@@ -7,16 +7,13 @@
 //? add sprites
 //? add bird to double bonus
 //* optimisation
-//? create max width and height
 //? create background image
 //? add delta time
 //? save max score
 //? add pre-rendering for main character
 //? ==> https://www.html5rocks.com/en/tutorials/canvas/performance/
 //? ==> https://developer.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
-//? multiple js files to better read code
 //? refactor code --> clear all //? stuff.
-//! tune this (BELL)
 
 //* ***DATA*** *//
 const canvas = document.getElementById("game-layer");
@@ -39,7 +36,7 @@ const framesPerSnow = 200;
 
 const numBells = 10; //* change number of bells
 const bellSpacing = canvas.height / 5;
-const playerJump = bellSpacing * 1.3;
+const playerJump = bellSpacing * 2;
 const playerJumpVelocity = -8;
 const minBellHeight = playerJump - bellSize;
 
@@ -52,6 +49,7 @@ let lowestBell = {}; //! is this useless?
 let playerHeight = 0;
 let crossedHeight = false;
 let score = 0;
+let cameraPositionY = 0;
 
 const mouse = {
   x: canvas.width / 2,
@@ -108,9 +106,9 @@ const bellRender = (arr) => {
   const bellTranslation = bellSpacing;
 
   for (let i = 0; i < arr.length; i++) {
-    // if (crossedHeight || arr[2].y < canvas.height / 3) {
-    //! tune this (BELL)
-    if (crossedHeight) {
+    if (crossedHeight || arr[1].y < canvas.height / 4) {
+      //! tune this (BELL)
+      // if (crossedHeight) {
       arr[i].y = arr[i].y + bellTranslation;
       console.log("we're going places!");
     }
@@ -159,6 +157,7 @@ canvas.addEventListener("mousedown", (event) => {
   mouseClick = true;
   player.jumping = false;
   player.velocityY = playerJumpVelocity;
+  // player.y += -30;
   console.log(event + "detected");
 
   //? find a way to remove mousedown after click so that player must use bells to jump
@@ -199,10 +198,7 @@ const gameLoop = (timeStamp) => {
     highestHeight = playerHeight;
     // console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
     crossedHeight = true;
-    if (
-      highestHeight >= 2 &&
-      (highestHeight % 2 === 0 || highestHeight % 3 === 0)
-    ) {
+    if (highestHeight >= 2 && highestHeight % 2 === 0) {
       //! tune this
       crossedHeight = false;
       console.log("CROSSED HEIGHT!");
@@ -224,7 +220,7 @@ const gameLoop = (timeStamp) => {
   snowRender(snow.snowArray);
   if (gameFrame % framesPerSnow === 0) {
     generateSnow(); //only generate snow every 200 frames
-    console.log("***BELLS CREATED***", bellArray);
+    // console.log("***BELLS STATUS***", bellArray);
   }
 
   //* Incrementors + resets
@@ -234,8 +230,9 @@ const gameLoop = (timeStamp) => {
   requestAnimationFrame(gameLoop); // recursive game loop
 
   //! TEST AREA
-  // console.log("player X pos and velocity", player.x, player.velocityX);
+  console.log("player X pos and velocity", player.x, player.velocityX);
   // console.log("player Y pos and velocity", player.y, player.velocityY);
+  console.log(mouse);
 };
 
 gameLoop(timeStamp);

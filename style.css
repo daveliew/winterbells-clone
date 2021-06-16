@@ -36,8 +36,6 @@ h2 {
   width: 600px;
   height: 450px;
   border: 2px solid black;
-  transform: translate(-50%, -50%);
-
   z-index: 2;
 }
 
