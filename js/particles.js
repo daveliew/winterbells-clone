@@ -1,4 +1,6 @@
 const particlesArray = [];
+const trailLength = 15;
+let hue = 0;
 
 class Particle {
   constructor() {
@@ -26,8 +28,8 @@ const particlesHandler = () => {
     particlesArray[i].update();
     particlesArray[i].draw();
   }
-  if (particlesArray.length > 50) {
-    for (let i = 0; i < 20; i++) {
+  if (particlesArray.length > trailLength) {
+    for (let i = 0; i < Math.floor(trailLength / 2); i++) {
       particlesArray.pop(particlesArray[i]);
     }
   }

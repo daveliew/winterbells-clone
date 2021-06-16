@@ -10,7 +10,7 @@ class Player {
     this.mass = 10; //?
     this.x = canvas.width / 2;
     this.y = canvas.height - this.height; //! testing
-    this.color = `hsl(${hue}, 100%, 50%)`;
+    this.color = "rgba(250,38,38,0.8)";
     this.velocityX = 3;
     this.velocityY = -8; //? what is a good boost rate?
     this.jumping = false;
@@ -47,10 +47,6 @@ class Player {
     }
 
     this.x += dx;
-
-    // console.log("dx", dx);
-    // console.log("playerx", this.x);
-
     // this.y += movingSpeed * secondsPassed;
     this.y += gravityPull * 2;
     this.velocityY *= 0.9;
@@ -69,11 +65,10 @@ class Player {
     }
   }
   draw() {
+    ctx.beginPath();
     ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-    // if (this.jumping === true) {
-    // bgCtx.drawImage(img, 0, this.parallax, 800, 600)}; //! TO TEST: Move background relative to player based on Y conditions
-    // }
+    ctx.rect(this.x, this.y, this.width, this.height);
+    ctx.fill();
   }
   addScore() {
     score += 100;

@@ -229,7 +229,7 @@ const gameLoop = (timeStamp) => {
   particlesHandler();
 
   //* Incrementors + resets
-  hue += 2; // change snow colour
+  hue += 2; // change trail colour
   gameFrame++;
 
   requestAnimationFrame(gameLoop); // recursive game loop

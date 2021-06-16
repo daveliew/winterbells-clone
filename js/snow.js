@@ -12,8 +12,6 @@ const snowCtx = snowCanvas.getContext("2d");
 snowCanvas.width = bgCanvas.width;
 snowCanvas.height = bgCanvas.height;
 
-let hue = 0;
-
 const snow = {
   snowArray: [],
   size: 3,
