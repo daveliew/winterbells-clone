@@ -40,7 +40,6 @@ const playerJumpVelocity = -8;
 const minBellHeight = playerJump - bellSize;
 
 let playerActivated = false;
-
 let mouseClick = false;
 let gameFrame = 0;
 let lowestBell = {}; //! is this useless?
@@ -153,7 +152,10 @@ document.addEventListener("mousemove", (event) => {
 
 //? fix this code
 document.addEventListener("mousedown", (event) => {
-  playerActivated = true;
+  if (playerActivated === false) {
+    playerActivated = true;
+    gameLoop(timeStamp);
+  }
   mouseClick = true;
   player.jumping = false;
   player.velocityY = playerJumpVelocity;
@@ -168,29 +170,16 @@ document.addEventListener("mousedown", (event) => {
 //   window.cancelAnimationFrame(requestAnimationFrameId);
 // };
 
-//* *** INITIALIZE GAME  *** *//
-const player = new Player();
-generateSnow();
-generateBell(player.y - canvas.height / 2);
-
-//*Handle Dynamic Frames using timeStamp (research Delta Time)
-let secondsPassed,
-  oldTimeStamp,
-  timeStamp,
-  highestHeight = 0;
-
-let movingSpeed = 50;
-
 //* *** GAME LOOP *** *//
 const gameLoop = (timeStamp) => {
   //* time calculation
+
   secondsPassed = (timeStamp - oldTimeStamp) / 1000;
   secondsPassed = Math.min(secondsPassed, 0.1);
   oldTimeStamp = timeStamp;
 
   //* reset variables for next frame phase
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   playerHeight = Math.floor((canvas.height - player.y) / 100);
 
   if (playerHeight > highestHeight) {
@@ -235,9 +224,40 @@ const gameLoop = (timeStamp) => {
   requestAnimationFrame(gameLoop); // recursive game loop
 
   //! TEST AREA
-  console.log("player X pos and velocity", player.x, player.velocityX);
+  // console.log("player X pos and velocity", player.x, player.velocityX);
   // console.log("player Y pos and velocity", player.y, player.velocityY);
-  console.log(mouse);
 };
 
-gameLoop(timeStamp);
+//* *** INITIALIZE GAME  *** *//
+const player = new Player();
+generateSnow();
+generateBell(player.y - canvas.height / 2);
+
+//*Handle Dynamic Frames using timeStamp (research Delta Time)
+let secondsPassed,
+  oldTimeStamp,
+  timeStamp,
+  highestHeight = 0;
+
+let movingSpeed = 50;
+
+if (playerActivated === false) {
+  const message1 = "Welcome to Winterbells!";
+  snowCtx.font = "70px Josefin Sans";
+  snowCtx.fillStyle = "white";
+
+  const message2 = "Left-click to start. Use the mouse to move left or right.";
+  const textWidth = ctx.measureText(message2).width;
+  ctx.font = "20px Josefin Sans";
+  ctx.fillStyle = "darkslategreen";
+
+  snowCtx.fillText(
+    message1,
+    snowCanvas.width / 2 - 370,
+    snowCanvas.height / 2 - 50
+  );
+  ctx.fillText(message2, canvas.width / 2 - 230, canvas.height / 2 + 50);
+  console.log("NOT STARTED");
+} else {
+  gameLoop(timeStamp);
+}

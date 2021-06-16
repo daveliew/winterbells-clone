@@ -1,6 +1,5 @@
 body {
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  font-family: "Josefin Sans", sans-serif;
   background-color: darkslategray;
 }
 
@@ -22,8 +21,8 @@ h2 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 660px;
-  height: 530px;
+  width: 650px;
+  height: 500px;
   border: 2px solid black;
   z-index: 1;
 }

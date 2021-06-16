@@ -39,7 +39,7 @@ class Player {
 
     //? trying this method to "calibrate mouse move to x move". wrap this in condition?
     let dx = Math.round(Math.floor(mouse.x - this.x) / this.velocityX);
-    console.log(dx);
+    // console.log(dx);
     //* scale down dx
     if (dx > this.velocityX) {
       dx /= this.velocityX;
