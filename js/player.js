@@ -1,7 +1,4 @@
-/** @type {HTMLCanvasElement} */
-//! port over player class
 //! add player image sprite
-
 //! to investigate view port + culling
 
 //* Generate Player
@@ -13,6 +10,7 @@ class Player {
     this.mass = 10; //?
     this.x = canvas.width / 2;
     this.y = canvas.height - this.height; //! testing
+    this.color = `hsl(${hue}, 100%, 50%)`;
     this.velocityX = 3;
     this.velocityY = -8; //? what is a good boost rate?
     this.jumping = false;
@@ -71,7 +69,7 @@ class Player {
     }
   }
   draw() {
-    ctx.fillStyle = "blue";
+    ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
     // if (this.jumping === true) {
     // bgCtx.drawImage(img, 0, this.parallax, 800, 600)}; //! TO TEST: Move background relative to player based on Y conditions

@@ -1,5 +1,3 @@
-/** @type {HTMLCanvasElement} */
-
 const bellSize = 10;
 const numBellCols = 7;
 const bellArray = [];

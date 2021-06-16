@@ -3,7 +3,6 @@
 //* core game build
 //? add viewport + fix bg image
 //? add condition that after first bell is caught, gameover sequence triggered
-//? show score
 //? add sprites
 //? add bird to double bonus
 //* optimisation
@@ -35,7 +34,7 @@ const difficulty = 3;
 const framesPerSnow = 200;
 
 const numBells = 10; //* change number of bells
-const bellSpacing = canvas.height / 5;
+const bellSpacing = canvas.height / 7; //vertical height
 const playerJump = bellSpacing * 2;
 const playerJumpVelocity = -8;
 const minBellHeight = playerJump - bellSize;
@@ -189,7 +188,6 @@ const gameLoop = (timeStamp) => {
   secondsPassed = Math.min(secondsPassed, 0.1);
   oldTimeStamp = timeStamp;
 
-  // requestAnimationFrameId = window.requestAnimationFrame(gameLoop);
   //* reset variables for next frame phase
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -223,6 +221,12 @@ const gameLoop = (timeStamp) => {
     generateSnow(); //only generate snow every 200 frames
     // console.log("***BELLS STATUS***", bellArray);
   }
+
+  //* screen cosmetics
+  ctx.font = "20px Lucida";
+  ctx.fillStyle = "white";
+  ctx.fillText(`Score: ${score}`, 20, 25);
+  particlesHandler();
 
   //* Incrementors + resets
   hue += 2; // change snow colour

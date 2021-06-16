@@ -23,7 +23,7 @@ h2 {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 660px;
-  height: 495px;
+  height: 530px;
   border: 2px solid black;
   z-index: 1;
 }

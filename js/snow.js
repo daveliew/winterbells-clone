@@ -1,14 +1,9 @@
-/** @type {HTMLCanvasElement} */
-//* background image
 const bgCanvas = document.getElementById("background-layer");
 const bgCtx = bgCanvas.getContext("2d");
 bgCanvas.width = window.innerWidth;
 bgCanvas.height = window.innerHeight;
 //! background image
 //const img = new Image();
-// img.src = "../assets/maria-vojtovicova-snow.jpg";
-
-// img.addEventListener("load", () => {});
 // img.src = "../assets/maria-vojtovicova-snow.jpg";
 
 //* snow layer
@@ -32,7 +27,7 @@ class Snow {
     this.size = Math.floor(Math.random() * snow.size) + 1;
     this.velocityX = Math.random() * 3 - 1.5;
     this.velocityY = Math.random() * gravityPull + 0.5;
-    this.color = `hsl(${hue}, 100%, 50%)`;
+    this.color = "rgba(220, 220, 220, 0.7)";
   }
   update() {
     this.x += Math.random() * 1 - 0.5; //* 2D vector creation
