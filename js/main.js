@@ -15,27 +15,12 @@
 //? refactor code --> clear all //? stuff.
 
 //* ***DATA*** *//
-const canvas = document.getElementById("game-layer");
-const ctx = canvas.getContext("2d");
-
 const audioObj = new Audio("/assets/winterbells.mp3");
 audioObj.play();
 
-canvas.width = GAME_WIDTH;
-canvas.height = GAME_HEIGHT;
-
-const colWidth = Math.floor((canvas.width * 0.9) / numBellCols);
-const SCREEN_X_MID = Math.floor(canvas.width / 2);
-
-const gravityPull = 3;
+const gravityPull = 2.5;
 const difficulty = 3;
 const framesPerSnow = 200;
-
-const numBells = 10; //* change number of bells
-const bellSpacing = canvas.height / 7; //vertical height
-const playerJump = bellSpacing * 2;
-const playerJumpVelocity = -8;
-const minBellHeight = playerJump - bellSize;
 
 let playerActivated = false;
 let mouseClick = false;
@@ -52,78 +37,7 @@ const mouse = {
   y: canvas.height / 2,
 };
 
-//* ***MAIN PROGRAMME*** *//
-
-//* Generate bell *//
-//? refactor this to Simon's suggestion if there's time --> next bell takes a random pos from the array of possibilities
-// [ - - - X - - -] 5
-// [ - X - - - - -] 4
-// [ - - - X - - -] 3
-// [ - - - - - X -] 2
-// [ - - X - - - -] 1
-const bellXpos = [
-  SCREEN_X_MID - colWidth * 3,
-  SCREEN_X_MID - colWidth * 2,
-  SCREEN_X_MID - colWidth * 1,
-  SCREEN_X_MID,
-  SCREEN_X_MID + colWidth * 1,
-  SCREEN_X_MID + colWidth * 2,
-  SCREEN_X_MID + colWidth * 3,
-];
-
-let prevX = 0;
-let currX = Math.floor(bellXpos.length / 2); //3, start at centre
-
-const randBellX = () => {
-  prevX = currX;
-  while (
-    currX === prevX || //prevents a random bell from having same X as a previous bell
-    currX - prevX <= -difficulty || //prevents a bell from being too far from a current bell
-    currX - prevX >= difficulty
-  ) {
-    currX = Math.floor(Math.random() * bellXpos.length);
-  }
-  return currX;
-};
-
-const generateBell = (posY) => {
-  let prevY = posY;
-  while (bellArray.length < numBells) {
-    let newX = randBellX();
-    let bell = new Bell(bellXpos[newX], prevY);
-    prevY -= bellSpacing;
-    lowestBell = bell;
-    bellArray.push(bell);
-  }
-  console.log("***BELLS CREATED***", bellArray);
-};
-
-const bellRender = (arr) => {
-  const bellTranslation = bellSpacing;
-
-  for (let i = 0; i < arr.length; i++) {
-    if (crossedHeight || arr[1].y < canvas.height / 4) {
-      //! tune this (BELL)
-      // if (crossedHeight) {
-      arr[i].y = arr[i].y + bellTranslation;
-      console.log("we're going places!");
-    }
-    arr[i].update();
-    arr[i].draw();
-    hasCollided(player, arr[i]);
-    if (arr[i].collided === true || arr[i].y > canvas.height - 100) {
-      arr.splice(i, 1); // remove bell from array to manage total #objects
-    }
-  }
-  const minBells = Math.floor(numBells / 2);
-  if (arr.length <= minBells) {
-    generateBell(arr[0].y - bellSpacing * minBells);
-  }
-
-  crossedHeight = false; // reset trigger for bell translation
-};
-
-//* Collision Detection Function *//
+//* *** FUNCTIONS *** *//
 const hasCollided = (player, bell) => {
   const collisionDistance = player.width + bell.size;
 
@@ -214,7 +128,7 @@ const gameLoop = (timeStamp) => {
   }
 
   //* screen cosmetics
-  ctx.font = "20px Lucida";
+  ctx.font = "20px Josefin Sans";
   ctx.fillStyle = "white";
   ctx.fillText(`Score: ${score}`, 20, 25);
   particlesHandler();

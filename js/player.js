@@ -24,16 +24,18 @@ class Player {
 
     if (mouseClick && this.jumping === false) {
       // this.y += 50 * secondsPassed;  //! change to seconds
-      this.y += -playerJump;
-
-      mouseClick = false; //! testing
+      this.velocityY -= playerJump * 2.5;
+      this.y += this.velocityY;
+      mouseClick = false;
       this.jumping = true;
-      this.parallax = GAME_HEIGHT - this.y; //? useless?
+      // this.parallax = GAME_HEIGHT - this.y; //? useless?
     }
 
     if (this.collided) {
-      this.velocityY += -10; //! TUNE
-      this.y += -50;
+      // this.velocityY += -10; //! TUNE
+      // this.y -= playerJump;
+      this.velocityY -= playerJump / 2;
+      this.y += this.velocityY;
       this.collided = false;
     }
 
@@ -72,6 +74,5 @@ class Player {
   }
   addScore() {
     score += 100;
-    console.log("Player score", score);
   }
 }

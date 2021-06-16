@@ -1,12 +1,11 @@
-const GAME_WIDTH = 600;
-const GAME_HEIGHT = 450;
-
+//* background layer
 const bgCanvas = document.getElementById("background-layer");
 const bgCtx = bgCanvas.getContext("2d");
+const GAME_WIDTH = 600;
+const GAME_HEIGHT = 450;
 bgCanvas.width = GAME_WIDTH;
 bgCanvas.height = GAME_HEIGHT;
-// bgCanvas.width = window.innerWidth;
-// bgCanvas.height = window.innerHeight;
+
 //! background image
 //const img = new Image();
 // img.src = "../assets/maria-vojtovicova-snow.jpg";
@@ -41,7 +40,6 @@ class Snow {
     snowCtx.beginPath(); //* like a paint path
     snowCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     snowCtx.fill();
-    // bgCtx.drawImage(img, 0, this.y, 800, 600); //! Endless scroller?
   }
 }
 
