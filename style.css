@@ -1,6 +1,7 @@
 body {
   font-family: "Josefin Sans", sans-serif;
-  background-color: darkslategray;
+  background-color: lightslategray;
+  background-repeat: no-repeat;
 }
 
 h1 {

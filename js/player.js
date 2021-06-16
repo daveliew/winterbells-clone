@@ -28,6 +28,9 @@ class Player {
     } // prevent left right movement till screen is clicked.
 
     if (mouseClick && this.jumping === false) {
+      if (firstClick) {
+        firstClick = false;
+      }
       // this.y += 50 * secondsPassed;  //! change to seconds
       this.velocityY -= playerJump * 2.5;
       this.y += this.velocityY;

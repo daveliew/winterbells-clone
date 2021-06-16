@@ -33,9 +33,10 @@ let score = 0;
 let cameraPositionY = 0; //! work on viewport later
 
 const mouse = {
-  x: canvas.width / 2,
-  y: canvas.height / 2,
+  x: canvas.width,
+  y: canvas.height,
 };
+
 /////////////////////////
 //* *** FUNCTIONS *** *//
 /////////////////////////
@@ -62,13 +63,13 @@ window.addEventListener("resize", () => {
   bgCanvas.height = window.innerHeight;
 });
 
-window.addEventListener("mousemove", (event) => {
+document.addEventListener("mousemove", (event) => {
   mouse.x = event.x;
   mouse.y = event.y;
 });
 
 //? fix this code
-window.addEventListener("mousedown", (event) => {
+document.addEventListener("mousedown", (event) => {
   mouseClick = true;
   player.jumping = false;
   player.velocityY = playerJumpVelocity;
@@ -160,6 +161,7 @@ const player = new Player();
 generateSnow();
 
 const makeNewBells = generateXArr(currX, numBells, difficulty);
+console.log("initial", makeNewBells);
 const startingBellY = player.y - canvas.height / 2;
 generateBell(makeNewBells, startingBellY);
 
@@ -172,6 +174,8 @@ let secondsPassed,
 let movingSpeed = 50;
 
 if (playerActivated) {
+  mouse.x = canvas.width / 2;
+  mouse.y = canvas.height / 2;
   gameLoop(timeStamp);
 } else {
   const message1 = "Welcome to Winterbells!";
