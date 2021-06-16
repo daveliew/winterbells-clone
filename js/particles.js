@@ -1,5 +1,5 @@
 const particlesArray = [];
-const trailLength = 15;
+const trailLength = 20;
 let hue = 0;
 
 class Particle {

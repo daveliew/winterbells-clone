@@ -1,25 +1,25 @@
 /** @type {HTMLCanvasElement} */
 //! TO DO LIST
 //* core game build
-//? add viewport + fix bg image
+//? fix bell algo
+//? add gameover
 //? add condition that after first bell is caught, gameover sequence triggered
-//? add sprites
+//? add viewport + fix bg image
+//? add spritesx
 //? add bird to double bonus
+//? refactor code --> clear all //? stuff.
 //* optimisation
 //? create background image
 //? add delta time
 //? save max score
 //? add pre-rendering for main character
-//? ==> https://www.html5rocks.com/en/tutorials/canvas/performance/
-//? ==> https://developer.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
-//? refactor code --> clear all //? stuff.
-
+//////////////////
 //* ***DATA*** *//
+//////////////////
 const audioObj = new Audio("/assets/winterbells.mp3");
 audioObj.play();
 
 const gravityPull = 2.5;
-const difficulty = 3;
 const framesPerSnow = 200;
 
 let playerActivated = false;
@@ -30,14 +30,15 @@ let lowestBell = {}; //! is this useless?
 let playerHeight = 0;
 let crossedHeight = false;
 let score = 0;
-let cameraPositionY = 0;
+let cameraPositionY = 0; //! work on viewport later
 
 const mouse = {
   x: canvas.width / 2,
   y: canvas.height / 2,
 };
-
+/////////////////////////
 //* *** FUNCTIONS *** *//
+/////////////////////////
 const hasCollided = (player, bell) => {
   const collisionDistance = player.width + bell.size;
 
@@ -68,13 +69,15 @@ window.addEventListener("mousemove", (event) => {
 
 //? fix this code
 window.addEventListener("mousedown", (event) => {
+  mouseClick = true;
+  player.jumping = false;
+  player.velocityY = playerJumpVelocity;
+
   if (playerActivated === false) {
     playerActivated = true;
     gameLoop(timeStamp);
   }
-  mouseClick = true;
-  player.jumping = false;
-  player.velocityY = playerJumpVelocity;
+
   // player.y += -30;
   console.log(event + "detected");
 
@@ -82,11 +85,14 @@ window.addEventListener("mousedown", (event) => {
   //? https://www.geeksforgeeks.org/javascript-removeeventlistener-method-with-examples/
 });
 
+//! do i need gameover stop?
 // const stopGameLoop = () => {
 //   window.cancelAnimationFrame(requestAnimationFrameId);
 // };
 
+////////////////////////////////
 //* *** GAME LOOP *** *//
+////////////////////////////////
 const gameLoop = (timeStamp) => {
   //* time calculation
 
@@ -96,11 +102,15 @@ const gameLoop = (timeStamp) => {
 
   //* reset variables for next frame phase
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  //* bell code
+  bellRender(bellArray);
+
+  //* player position calculations
   playerHeight = Math.floor((canvas.height - player.y) / 100);
 
   if (playerHeight > highestHeight) {
     highestHeight = playerHeight;
-    // console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
     crossedHeight = true;
     if (highestHeight >= 2 && highestHeight % 2 === 0) {
       //! tune this
@@ -108,9 +118,6 @@ const gameLoop = (timeStamp) => {
       console.log("CROSSED HEIGHT!");
     }
   }
-
-  //* bell code
-  bellRender(bellArray);
 
   //* player code
   player.update(secondsPassed);
@@ -142,12 +149,19 @@ const gameLoop = (timeStamp) => {
   //! TEST AREA
   // console.log("player X pos and velocity", player.x, player.velocityX);
   // console.log("player Y pos and velocity", player.y, player.velocityY);
+  // console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
 };
 
+////////////////////////////////
 //* *** INITIALIZE GAME  *** *//
+////////////////////////////////
+
 const player = new Player();
 generateSnow();
-generateBell(player.y - canvas.height / 2);
+
+const makeNewBells = generateXArr(currX, numBells, difficulty);
+const startingBellY = player.y - canvas.height / 2;
+generateBell(makeNewBells, startingBellY);
 
 //*Handle Dynamic Frames using timeStamp (research Delta Time)
 let secondsPassed,

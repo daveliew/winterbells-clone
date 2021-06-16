@@ -35,25 +35,27 @@ class Bell {
 }
 
 //* Generate bell *//
-//? refactor this to Simon's suggestion if there's time --> next bell takes a random pos from the array of possibilities
+//! Thought - shift the bells down on the redraw to give illusion that player has scaled upwards.
+//! BELLS ONLY FALL UP TO A CERTAIN Y, then they are static => based on position.
 
 const bellArray = [];
-
-const numBells = 20; //* change number of bells
+const numBells = 10; //* change number of bells
+const difficulty = 3;
 const bellSize = 10;
-const bellSpacing = canvas.height / 12; //vertical height
+const bellSpacing = canvas.height / 10; //vertical height
 
 const numBellCols = 9;
 const colWidth = Math.floor((canvas.width * 0.9) / numBellCols);
 const SCREEN_X_MID = Math.floor(canvas.width / 2);
 
-// [ - -  - - - X - - -] 5
+//* refactored this to Simon's suggestion if there's time --> next bell takes a random pos from the array of possibilities
+// [ 0 1 2 3 4 5 6 7 8]
+// [ - - - - - X - - -] 5
 // [ - X - - - - - - -] 4
 // [ - - - X - - - - -] 3
 // [ - - - - - X - - -] 2
 // [ - - - - X - - - -] 1
-
-const bellXpos = [
+const bellXPos = [
   SCREEN_X_MID - colWidth * 4,
   SCREEN_X_MID - colWidth * 3,
   SCREEN_X_MID - colWidth * 2,
@@ -65,35 +67,37 @@ const bellXpos = [
   SCREEN_X_MID + colWidth * 4,
 ];
 
-const playerJump = bellSpacing * 1.5;
-const playerJumpVelocity = -8;
-
-//! Thought - shift the bells down on the redraw to give illusion that player has scaled upwards.
-//! BELLS ONLY FALL UP TO A CERTAIN Y, then they are static => based on position.
-
 let prevX = 0;
-let currX = Math.floor(bellXpos.length / 2); //4, start at centre
+let currX = Math.floor(bellXPos.length / 2); //4, start at centre
+console.log(currX);
 
-const randBellX = () => {
-  prevX = currX;
-  while (
-    currX === prevX || //prevents a random bell from having same X as a previous bell
-    currX - prevX <= -difficulty || //prevents a bell from being too far from a current bell
-    currX - prevX >= difficulty
-  ) {
-    currX = Math.floor(Math.random() * bellXpos.length);
-  }
-
-  return currX;
+const randNum = (num, range) => {
+  let r = 0;
+  r = Math.round(Math.random() * (range - 1)) - Math.floor((range - 1) / 2);
+  return num + r;
 };
 
-const generateBell = (posY) => {
+const generateXArr = (start, arrLength, range) => {
+  let result = [];
+  result.push(start);
+  let curr = start;
+  let next = curr;
+
+  for (i = 0; i < arrLength - 1; i++) {
+    curr = next;
+    while (curr === next) {
+      next = randNum(start, range);
+    }
+    result.push(next);
+  }
+  return result;
+};
+
+const generateBell = (arr, posY) => {
   let prevY = posY;
-  while (bellArray.length < numBells) {
-    let newX = randBellX();
-    let bell = new Bell(bellXpos[newX], prevY);
+  for (let i = 0; i < numBells; i++) {
+    let bell = new Bell(bellXPos[arr[i]], prevY);
     prevY -= bellSpacing;
-    lowestBell = bell;
     bellArray.push(bell);
   }
   console.log("***BELLS CREATED***", bellArray);
@@ -120,8 +124,37 @@ const bellRender = (arr) => {
   const minBells = Math.floor(numBells / 2);
 
   if (arr.length <= minBells) {
-    generateBell(arr[0].y - bellSpacing * minBells);
+    const makeNewBells = generateXArr(currX, numBells, difficulty);
+    console.log("inside function", makeNewBells);
+    currX = makeNewBells[makeNewBells.length - 1];
+    generateBell(makeNewBells, arr[arr.length - 1].y - bellSpacing * minBells);
   }
 
   crossedHeight = false; // reset trigger for bell translation
 };
+
+//* Previous Generate Bell Algorithm
+// const randBellX = () => {
+//   prevX = currX;
+//   while (
+//     currX === prevX || //prevents a random bell from having same X as a previous bell
+//     currX - prevX <= -difficulty || //prevents a bell from being too far from a current bell
+//     currX - prevX >= difficulty
+//   ) {
+//     currX = Math.floor(Math.random() * bellXpos.length);
+//   }
+
+//   return currX;
+// };
+
+// const generateBell = (posY) => {
+//   let prevY = posY;
+//   while (bellArray.length < numBells) {
+//     let newX = randBellX();
+//     let bell = new Bell(bellXpos[newX], prevY);
+//     prevY -= bellSpacing;
+//     lowestBell = bell;
+//     bellArray.push(bell);
+//   }
+//   console.log("***BELLS CREATED***", bellArray);
+// };

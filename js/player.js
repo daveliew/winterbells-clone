@@ -1,15 +1,20 @@
 //! add player image sprite
 //! to investigate view port + culling
 
+const playerJump = bellSpacing * 1.5;
+const playerJumpVelocity = -8;
+
+/////////////////////////
 //* Generate Player
+/////////////////////////
 //? use a jumping method inside
 class Player {
   constructor() {
     this.width = 20;
     this.height = 20;
-    this.mass = 10; //?
+    this.mass = 10; //! are we using this?
     this.x = canvas.width / 2;
-    this.y = canvas.height - this.height; //! testing
+    this.y = canvas.height - this.height;
     this.color = "rgba(250,38,38,0.8)";
     this.velocityX = 4;
     this.velocityY = -8; //? what is a good boost rate?
@@ -56,8 +61,8 @@ class Player {
     //*prevent player from leaving canvas
     if (this.x < 0) {
       this.x = 0;
-    } else if (this.x + this.width > GAME_WIDTH) {
-      this.x = GAME_WIDTH - this.width;
+    } else if (this.x + this.width > canvas.width) {
+      this.x = canvas.width - this.width;
     }
 
     if (this.y >= canvas.height - this.height) {
