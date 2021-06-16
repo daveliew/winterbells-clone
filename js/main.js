@@ -146,13 +146,14 @@ const hasCollided = (player, bell) => {
 };
 
 //* ***EVENT LISTENERS*** *//
-canvas.addEventListener("mousemove", (event) => {
+
+document.addEventListener("mousemove", (event) => {
   mouse.x = event.x;
   mouse.y = event.y;
 });
 
 //? fix this code
-canvas.addEventListener("mousedown", (event) => {
+document.addEventListener("mousedown", (event) => {
   playerActivated = true;
   mouseClick = true;
   player.jumping = false;
