@@ -7,40 +7,42 @@ body {
 h1 {
   text-align: center;
   color: mistyrose;
+  margin: 0 auto;
 }
 
 h2 {
   text-align: center;
   font-size: 1em;
   color: gainsboro;
+  margin: 0 auto;
 }
 
 #background-layer {
-  position: absolute;
+  position: fixed;
   background: rgba(0, 200, 200, 0.7);
   background-image: linear-gradient(black, white);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 650px;
-  height: 500px;
+  height: 480px;
   border: 2px solid black;
   z-index: 1;
 }
 
 #snow-layer {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 600px;
   height: 450px;
-  border: 2px solid black;
   z-index: 2;
+  border: 2px solid black;
 }
 
 #game-layer {
-  position: absolute;
+  position: fixed;
   background: rgba(23, 200, 200, 0.2);
   top: 50%;
   left: 50%;
