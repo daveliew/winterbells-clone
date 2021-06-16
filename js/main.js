@@ -21,8 +21,6 @@ const ctx = canvas.getContext("2d");
 const audioObj = new Audio("/assets/winterbells.mp3");
 audioObj.play();
 
-const GAME_WIDTH = 600;
-const GAME_HEIGHT = 450;
 canvas.width = GAME_WIDTH;
 canvas.height = GAME_HEIGHT;
 
@@ -144,14 +142,18 @@ const hasCollided = (player, bell) => {
 };
 
 //* ***EVENT LISTENERS*** *//
+window.addEventListener("resize", () => {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+});
 
-document.addEventListener("mousemove", (event) => {
+window.addEventListener("mousemove", (event) => {
   mouse.x = event.x;
   mouse.y = event.y;
 });
 
 //? fix this code
-document.addEventListener("mousedown", (event) => {
+window.addEventListener("mousedown", (event) => {
   if (playerActivated === false) {
     playerActivated = true;
     gameLoop(timeStamp);
@@ -241,23 +243,25 @@ let secondsPassed,
 
 let movingSpeed = 50;
 
-if (playerActivated === false) {
+if (playerActivated) {
+  gameLoop(timeStamp);
+} else {
   const message1 = "Welcome to Winterbells!";
-  snowCtx.font = "70px Josefin Sans";
+  const textWidth1 = snowCtx.measureText(message1).width;
+  snowCtx.font = "36px Josefin Sans";
   snowCtx.fillStyle = "white";
 
   const message2 = "Left-click to start. Use the mouse to move left or right.";
-  const textWidth = ctx.measureText(message2).width;
+  const textWidth2 = ctx.measureText(message2).width;
   ctx.font = "20px Josefin Sans";
   ctx.fillStyle = "darkslategreen";
 
   snowCtx.fillText(
     message1,
-    snowCanvas.width / 2 - 370,
+    snowCanvas.width / 2 - textWidth1 * 1.8,
     snowCanvas.height / 2 - 50
   );
-  ctx.fillText(message2, canvas.width / 2 - 230, canvas.height / 2 + 50);
+  ctx.fillText(message2, canvas.width / 2 - textWidth2, canvas.height / 2 + 50);
   console.log("NOT STARTED");
-} else {
-  gameLoop(timeStamp);
+  console.log(textWidth1, textWidth2);
 }

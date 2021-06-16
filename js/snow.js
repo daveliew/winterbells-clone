@@ -1,7 +1,12 @@
+const GAME_WIDTH = 600;
+const GAME_HEIGHT = 450;
+
 const bgCanvas = document.getElementById("background-layer");
 const bgCtx = bgCanvas.getContext("2d");
-bgCanvas.width = window.innerWidth;
-bgCanvas.height = window.innerHeight;
+bgCanvas.width = GAME_WIDTH;
+bgCanvas.height = GAME_HEIGHT;
+// bgCanvas.width = window.innerWidth;
+// bgCanvas.height = window.innerHeight;
 //! background image
 //const img = new Image();
 // img.src = "../assets/maria-vojtovicova-snow.jpg";

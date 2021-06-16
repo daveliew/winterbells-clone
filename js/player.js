@@ -11,7 +11,7 @@ class Player {
     this.x = canvas.width / 2;
     this.y = canvas.height - this.height; //! testing
     this.color = "rgba(250,38,38,0.8)";
-    this.velocityX = 3;
+    this.velocityX = 4;
     this.velocityY = -8; //? what is a good boost rate?
     this.jumping = false;
     this.collided = false; //? useless?
@@ -39,7 +39,7 @@ class Player {
 
     //? trying this method to "calibrate mouse move to x move". wrap this in condition?
     let dx = Math.round(Math.floor(mouse.x - this.x) / this.velocityX);
-    // console.log(dx);
+
     //* scale down dx
     if (dx > this.velocityX) {
       dx /= this.velocityX;
