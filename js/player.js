@@ -47,7 +47,7 @@ class Player {
       this.velocityY -= playerJump / 2;
       this.y += this.velocityY;
       this.collided = false;
-      jumped = true; //! camera pan?
+      // jumped = true; //! camera pan?
     }
 
     //? trying this method to "calibrate mouse move to x move". wrap this in condition?

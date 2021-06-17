@@ -27,7 +27,6 @@ class Bell {
     // }
   }
   draw() {
-    // ctx.translate(0, player.y - 100);
     ctx.fillStyle = this.color;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -69,8 +68,8 @@ const bellXPos = [
 ];
 
 let prevX = 0;
-let currX = Math.floor(bellXPos.length / 2); //4, start at centre
-console.log(currX);
+let currCol = Math.floor(bellXPos.length / 2); //4, start at centre
+console.log(currCol);
 
 const randNum = (num, range) => {
   let r = 0;
@@ -108,12 +107,12 @@ const bellRender = (arr) => {
   const bellTranslation = bellSpacing;
 
   for (let i = 0; i < arr.length; i++) {
-    // if (crossedHeight || arr[1].y < canvas.height / 4) {
-    //   //! tune this (BELL)
-    //   // if (crossedHeight) {
-    //   arr[i].y = arr[i].y + bellTranslation;
-    //   console.log("we're going places!");
-    // }
+    if (crossedHeight || arr[1].y < canvas.height / 4) {
+      //! tune this (BELL)
+      // if (crossedHeight) {
+      arr[i].y = arr[i].y + bellTranslation;
+      console.log("we're going places!");
+    }
     arr[i].update();
     arr[i].draw();
     hasCollided(player, arr[i]);
@@ -125,7 +124,7 @@ const bellRender = (arr) => {
   const minBells = Math.floor(numBells / 2);
 
   if (arr.length <= minBells) {
-    const makeNewBells = generateXArr(currX, numBells, difficulty);
+    const makeNewBells = generateXArr(currCol, numBells, difficulty);
     console.log("inside function", makeNewBells);
     currX = makeNewBells[makeNewBells.length - 1];
     generateBell(makeNewBells, arr[arr.length - 1].y - bellSpacing * minBells);

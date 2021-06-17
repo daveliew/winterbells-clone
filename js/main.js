@@ -2,6 +2,8 @@
 //! TO DO LIST
 //* core game build
 //? add gameover
+//! fix bug player falls from top of screen on click
+//   //! tune bellRender()
 //? add condition that after first bell is caught, gameover sequence triggered
 //? add viewport + fix bg image
 //? add sprites
@@ -102,6 +104,7 @@ const gameLoop = (timeStamp) => {
 
   //* reset variables for next frame phase
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  bgCtx.clearRect(0, 0, canvas.width, canvas.height);
 
   //* bell code
   bellRender(bellArray);
@@ -135,9 +138,9 @@ const gameLoop = (timeStamp) => {
   }
 
   //* screen cosmetics
-  ctx.font = "20px Josefin Sans";
-  ctx.fillStyle = "white";
-  ctx.fillText(`Score: ${score}`, 20, 25);
+  bgCtx.font = "20px Josefin Sans";
+  bgCtx.fillStyle = "white";
+  bgCtx.fillText(`Score: ${score}`, 20, 25);
   particlesHandler();
 
   //* camera translate
@@ -162,8 +165,7 @@ const gameLoop = (timeStamp) => {
 const player = new Player();
 generateSnow();
 
-const makeNewBells = generateXArr(currX, numBells, difficulty);
-console.log("initial", makeNewBells);
+const makeNewBells = generateXArr(currCol, numBells, difficulty);
 const startingBellY = player.y - canvas.height / 2;
 generateBell(makeNewBells, startingBellY);
 
@@ -173,7 +175,7 @@ let secondsPassed,
   timeStamp,
   highestHeight = 0;
 
-let movingSpeed = 50;
+let movingSpeed = 50; //! is this used?
 
 if (playerActivated) {
   mouse.x = canvas.width / 2;
@@ -197,5 +199,4 @@ if (playerActivated) {
   );
   ctx.fillText(message2, canvas.width / 2 - textWidth2, canvas.height / 2 + 50);
   console.log("NOT STARTED");
-  console.log(textWidth1, textWidth2);
 }
