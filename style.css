@@ -1,13 +1,15 @@
 body {
   font-family: "Josefin Sans", sans-serif;
   background-color: lightslategray;
-  background-repeat: no-repeat;
-  margin-top: 50px;
 }
 
 #game-title {
   margin: 0 auto;
-  margin-top: 3%;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 h1 {
@@ -19,13 +21,16 @@ h1 {
 
 h2 {
   text-align: center;
-  font-size: 1em;
   color: gainsboro;
-  margin-bottom: 1%;
+  font-size: 1em;
+}
+
+.container {
+  position: relative;
 }
 
 #background-layer {
-  position: fixed;
+  position: absolute;
   background: rgba(0, 200, 200, 0.7);
   background-image: linear-gradient(black, mistyrose);
   top: 55%;
@@ -38,7 +43,7 @@ h2 {
 }
 
 #snow-layer {
-  position: fixed;
+  position: absolute;
   top: 55%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -49,7 +54,7 @@ h2 {
 }
 
 #game-layer {
-  position: fixed;
+  position: absolute;
   background: rgba(23, 200, 200, 0.2);
   top: 55%;
   left: 50%;
