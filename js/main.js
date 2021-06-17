@@ -146,7 +146,7 @@ const gameLoop = (timeStamp) => {
   //* Incrementors + resets
   hue += 2; // change trail colour
   gameFrame++;
-  console.log("test");
+
   requestAnimationFrame(gameLoop); // recursive game loop
 
   //! TEST AREA
