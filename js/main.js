@@ -2,8 +2,7 @@
 //! TO DO LIST
 //* core game build
 //? add gameover
-//! fix bug player falls from top of screen on click
-//   //! tune bellRender()
+//! tune bellRender() --> translation causes bells to end up in same col?
 //? add condition that after first bell is caught, gameover sequence triggered
 //? add viewport + fix bg image
 //? add sprites
@@ -27,6 +26,7 @@ let playerActivated = false;
 let mouseClick = false;
 let gameFrame = 0;
 let lowestBell = {}; //! is this useless?
+let firstClick = true;
 
 let playerHeight = 0;
 let crossedHeight = false;
@@ -80,7 +80,6 @@ document.addEventListener("mousedown", (event) => {
     gameLoop(timeStamp);
   }
 
-  // player.y += -30;
   console.log(event + "detected");
 
   //? find a way to remove mousedown after click so that player must use bells to jump
@@ -97,14 +96,14 @@ document.addEventListener("mousedown", (event) => {
 ////////////////////////////////
 const gameLoop = (timeStamp) => {
   //* time calculation
-
   secondsPassed = (timeStamp - oldTimeStamp) / 1000;
   secondsPassed = Math.min(secondsPassed, 0.1);
   oldTimeStamp = timeStamp;
 
-  //* reset variables for next frame phase
+  //* clear screen for next frame phase
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   bgCtx.clearRect(0, 0, canvas.width, canvas.height);
+  snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
 
   //* bell code
   bellRender(bellArray);
@@ -129,7 +128,6 @@ const gameLoop = (timeStamp) => {
   // hasCollided(player, lowestBell); //! think about which bell it is later
 
   //* snow code
-  snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
   snowCtx.fillStyle = "rgba(40,48,56,0.25)";
   snowRender(snow.snowArray);
   if (gameFrame % framesPerSnow === 0) {
@@ -178,8 +176,8 @@ let secondsPassed,
 let movingSpeed = 50; //! is this used?
 
 if (playerActivated) {
-  mouse.x = canvas.width / 2;
-  mouse.y = canvas.height / 2;
+  // mouse.x = canvas.width / 2;
+  // mouse.y = canvas.height / 2; //! do i need to reset mouse?
   gameLoop(timeStamp);
 } else {
   const message1 = "Welcome to Winterbells!";

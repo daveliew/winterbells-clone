@@ -18,10 +18,9 @@ class Player {
     this.y = canvas.height - this.height;
     this.color = "rgba(250,38,38,0.8)";
     this.velocityX = 4;
-    this.velocityY = -8; //? what is a good boost rate?
+    this.velocityY = -8;
     this.jumping = false;
-    this.collided = false; //? useless?
-    this.parallax = this.y; //? useless?
+    this.collided = false;
   }
   update(secondsPassed) {
     if (!playerActivated) {
@@ -29,16 +28,17 @@ class Player {
     } // prevent left right movement till screen is clicked.
 
     if (mouseClick && this.jumping === false) {
-      // if (firstClick) {  //! player fix
-      //   firstClick = false;
-      // }
-
-      // this.y += 50 * secondsPassed;  //! change to seconds
-      this.velocityY -= playerJump * 2.5;
-      this.y += this.velocityY;
+      if (firstClick) {
+        firstClick = false;
+        player.x = canvas.width / 2;
+        player.y = canvas.height - this.height;
+      } else {
+        // this.y += 50 * secondsPassed;  //! change to seconds
+        this.velocityY -= playerJump * 2.5;
+        this.y += this.velocityY;
+      }
       mouseClick = false;
       this.jumping = true;
-      // this.parallax = GAME_HEIGHT - this.y; //? useless?
     }
 
     if (this.collided) {
