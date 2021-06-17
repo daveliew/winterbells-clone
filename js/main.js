@@ -6,9 +6,9 @@
 //? add bird to double bonus
 //? refactor code --> clear all //? stuff.
 //* optimisation
+//! fix highscore message
 //? tune bellRender() --> translation causes bells to end up in same col?
 //? add delta time
-//? save max score to local storage?
 //? create background image
 //? add pre-rendering for main character
 //////////////////
@@ -73,9 +73,15 @@ const hasCollided = (player, bell) => {
 
 const gameOver = () => {
   console.log("YOU LOST!");
+  canvas.style.cursor = "pointer";
+  if (score === highScore) {
+    gameOverMessage.textContent = `Nice! You set a new high score ${highScore}.`;
+  } else {
+    gameOverMessage.textContent = `Good try! Your score is ${score}.`;
+  }
   restartButton.style.display = "block";
-  gameOverMessage.textContent = `Good try! Your score is ${score}.`;
   gameOverMessage.style.display = "block";
+
   playerActivated = false;
   window.cancelAnimationFrame(id);
 };
@@ -93,7 +99,6 @@ let movingSpeed = 50; //! is this used?
 ////////////////////////////////
 const gameLoop = (timeStamp) => {
   let id = window.requestAnimationFrame;
-  checkHighScore(score);
 
   //* time calculation
   secondsPassed = (timeStamp - lastTimeStamp) / 1000; // number of frames to produce this.
@@ -107,6 +112,7 @@ const gameLoop = (timeStamp) => {
   snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
 
   //* check gameover
+  checkHighScore(score);
   if (firstClick === false && score > 0) {
     if (player.y >= canvas.height - player.height) {
       gameOver();
@@ -186,22 +192,22 @@ generateBell(makeNewBells, startingBellY, startNumBells);
 if (playerActivated) {
   gameLoop(timeStamp);
 } else {
-  const message1 = "Welcome to Winterbells!";
-  const textWidth1 = snowCtx.measureText(message1).width;
+  const h1Text = "Welcome to Winterbells!";
+  const h1TextWidth = snowCtx.measureText(h1Text).width;
   snowCtx.font = "36px Josefin Sans";
   snowCtx.fillStyle = "white";
 
-  const message2 = "Left-click to start. Use the mouse to move left or right.";
-  const textWidth2 = ctx.measureText(message2).width;
+  const h2Text = "Left-click to start. Use the mouse to move left or right.";
+  const h2TextWidth = ctx.measureText(h2Text).width;
   ctx.font = "20px Josefin Sans";
   ctx.fillStyle = "darkslategreen";
 
   snowCtx.fillText(
-    message1,
-    snowCanvas.width / 2 - textWidth1 * 1.8,
+    h1Text,
+    snowCanvas.width / 2 - h1TextWidth * 1.8,
     snowCanvas.height / 2 - 50
   );
-  ctx.fillText(message2, canvas.width / 2 - textWidth2, canvas.height / 2 + 50);
+  ctx.fillText(h2Text, canvas.width / 2 - h2TextWidth, canvas.height / 2 + 50);
   console.log("NOT STARTED");
 }
 
