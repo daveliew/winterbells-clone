@@ -1,12 +1,12 @@
 const particlesArray = [];
-const trailLength = 20;
+const trailLength = 30;
 let hue = 0;
 
 class Particle {
   constructor() {
-    this.x = player.x + player.width / 2;
-    this.y = player.y + player.height;
-    this.size = Math.floor(Math.random() * 2) + 1;
+    this.x = player.x;
+    this.y = player.y + player.height / 2;
+    this.size = Math.floor(Math.random() * 4) + 2;
     this.speedY = Math.random() * 1;
     this.color = `hsl(${hue}, 100%, 50%)`;
   }

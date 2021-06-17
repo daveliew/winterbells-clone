@@ -1,15 +1,10 @@
 /** @type {HTMLCanvasElement} */
 //! TO DO LIST
-//* core game build
-//? add sprites
+//* unfinished business
 //? add bird to double bonus
-//? refactor code --> clear all //? stuff.
-//* optimisation
 //? floating message score
 //? tune bellRender() --> translation causes bells to end up in same col?
 //? add viewport + fix bg image
-//? add delta time
-//? create background image
 //? add pre-rendering for main character
 //////////////////
 //* ***DATA*** *//
@@ -27,7 +22,7 @@ bgMusic.play();
 
 const gravityPull = 2.5;
 const framesPerSnow = 200;
-const startNumBells = 20; //* change number of bells generated on load
+const startNumBells = 10; //* change number of bells generated on load
 
 //* initial game settings
 const mouse = {
@@ -60,7 +55,7 @@ const checkHighScore = (score) => {
 };
 
 const hasCollided = (player, obj) => {
-  const collisionDistance = player.width + obj.size;
+  const collisionDistance = player.width / 2 + obj.size / 2;
 
   const distance = Math.sqrt(
     Math.pow(player.x - obj.x, 2) + Math.pow(player.y - obj.y, 2)

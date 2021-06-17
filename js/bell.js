@@ -1,5 +1,7 @@
 const canvas = document.getElementById("game-layer");
 const ctx = canvas.getContext("2d");
+const bellImg = new Image();
+bellImg.src = "/assets/bell.png";
 
 canvas.width = GAME_WIDTH;
 canvas.height = GAME_HEIGHT;
@@ -30,7 +32,14 @@ class Bell {
   draw(secondsPassed) {
     ctx.fillStyle = this.color;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.drawImage(
+      bellImg,
+      this.x,
+      this.y,
+      bellImg.width / 15,
+      bellImg.height / 15
+    );
+    // ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
   }
 }
@@ -38,7 +47,7 @@ class Bell {
 //* Bell Production Settings*//
 const bellArray = [];
 const difficulty = 5;
-const bellSize = 10;
+const bellSize = 20;
 const bellSpacing = canvas.height / 10; //vertical height
 
 //* Chop up Canvas into <numBellCols> Columns*//

@@ -3,14 +3,20 @@ const playerJump = bellSpacing * 1.5;
 const playerJumpVelocity = -8;
 let jumped = false;
 
+const playerImage = new Image();
+playerImage.src = "/assets/Cubeman_jump.png";
+const spriteWidth = 339;
+const spriteHeight = 404;
+let frameX = 0;
+const staggerFrames = 5;
+
 /////////////////////////
 //* Generate Player
 /////////////////////////
-//? use a jumping method inside
 class Player {
   constructor() {
-    this.width = 20;
-    this.height = 20;
+    this.width = 40;
+    this.height = 40;
     this.x = canvas.width / 2;
     this.y = canvas.height - this.height;
     this.color = "rgba(250,38,38,0.8)";
@@ -31,9 +37,29 @@ class Player {
     this.velocityY *= 0.9;
   }
   draw() {
-    ctx.beginPath();
-    ctx.fillStyle = this.color;
-    ctx.rect(this.x, this.y, this.width, this.height);
+    // ctx.beginPath();
+    // ctx.fillStyle = this.color;
+    // ctx.rect(this.x, this.y, this.width, this.height);
+    //ctx.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh)
+    ctx.drawImage(
+      playerImage,
+      frameX * spriteWidth,
+      0,
+      spriteWidth,
+      spriteHeight,
+      this.x,
+      this.y,
+      this.width,
+      this.height
+    );
+    if (gameFrame % staggerFrames === 0) {
+      if (frameX < 10) {
+        frameX++;
+      } else {
+        frameX = 0;
+      }
+    }
+
     ctx.fill();
   }
   addScore() {
