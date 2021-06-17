@@ -78,13 +78,13 @@ window.addEventListener("resize", () => {
   bgCanvas.height = window.innerHeight;
 });
 
-document.addEventListener("mousemove", (event) => {
+window.addEventListener("mousemove", (event) => {
   mouse.x = event.x;
   mouse.y = event.y;
 });
 
 //? fix this code
-document.addEventListener("mousedown", (event) => {
+window.addEventListener("mousedown", (event) => {
   mouseClick = true;
   player.jumping = false;
   player.velocityY = playerJumpVelocity;

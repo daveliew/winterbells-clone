@@ -13,7 +13,6 @@ class Player {
   constructor() {
     this.width = 20;
     this.height = 20;
-    this.mass = 10; //! are we using this?
     this.x = canvas.width / 2;
     this.y = canvas.height - this.height;
     this.color = "rgba(250,38,38,0.8)";
@@ -23,6 +22,7 @@ class Player {
     this.collided = false;
   }
   update(secondsPassed) {
+    //! do we need secondsPassed or mass?
     if (!playerActivated) {
       return;
     } // prevent left right movement till screen is clicked.
@@ -32,7 +32,6 @@ class Player {
     this.calibrateMouse();
     this.checkBoundaries();
 
-    //! this.y += movingSpeed * secondsPassed;  --> would this help?
     this.y += gravityPull * 2;
     this.velocityY *= 0.9;
   }
@@ -41,16 +40,13 @@ class Player {
     ctx.fillStyle = this.color;
     ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fill();
-    // if (jumped) {
-    //   ctx.translate(0, playerJump);
-    //   jumped = false;
-    // }
   }
   addScore() {
     score += 100;
   }
   calibrateMouse() {
-    let dx = Math.round(Math.floor(mouse.x - this.x) / this.velocityX);
+    // let dx = Math.round(Math.floor(mouse.x - this.x) / this.velocityX);
+    let dx = Math.round(Math.floor(mouse.x - this.x));
 
     //* scale down dx
     if (dx > this.velocityX) {
