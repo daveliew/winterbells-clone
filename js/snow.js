@@ -1,16 +1,16 @@
 //* background layer
 const bgCanvas = document.getElementById("background-layer");
 const bgCtx = bgCanvas.getContext("2d");
-const GAME_WIDTH = 600;
-const GAME_HEIGHT = 450;
+const GAME_WIDTH = 608;
+const GAME_HEIGHT = 416;
 bgCanvas.width = GAME_WIDTH;
 bgCanvas.height = GAME_HEIGHT;
 
 //* snow layer
 const snowCanvas = document.getElementById("snow-layer");
 const snowCtx = snowCanvas.getContext("2d");
-snowCanvas.width = bgCanvas.width;
-snowCanvas.height = bgCanvas.height;
+snowCanvas.width = GAME_WIDTH;
+snowCanvas.height = GAME_HEIGHT;
 
 const snow = {
   snowArray: [],

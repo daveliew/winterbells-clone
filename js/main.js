@@ -27,8 +27,8 @@ const startNumBells = 10; //* change number of bells generated on load
 
 //* initial game settings
 const mouse = {
-  x: canvas.width,
-  y: canvas.height,
+  x: canvas.width / 2,
+  y: canvas.height / 2,
 };
 
 let playerActivated = false;
@@ -38,14 +38,22 @@ let lowestBell = {}; //! is this useless?
 let firstClick = true;
 
 //* in-game calculations
+let cameraPositionY = 0; //! work on viewport later
 let playerHeight = 0;
 let crossedHeight = false;
 let score = 0;
-let cameraPositionY = 0; //! work on viewport later
+let highScore = 0;
 
 /////////////////////////
 //* *** FUNCTIONS *** *//
 /////////////////////////
+const checkHighScore = (score) => {
+  highScore = parseInt(localStorage.getItem("highscore"));
+  if (score > highScore) {
+    localStorage.setItem("highscore", score);
+  }
+};
+
 const hasCollided = (player, bell) => {
   const collisionDistance = player.width + bell.size;
 
@@ -72,37 +80,6 @@ const gameOver = () => {
   window.cancelAnimationFrame(id);
 };
 
-//* ***EVENT LISTENERS*** *//
-window.addEventListener("resize", () => {
-  bgCanvas.width = window.innerWidth;
-  bgCanvas.height = window.innerHeight;
-});
-
-window.addEventListener("mousemove", (event) => {
-  mouse.x = event.x;
-  mouse.y = event.y;
-});
-
-//? fix this code
-window.addEventListener("mousedown", (event) => {
-  mouseClick = true;
-  player.jumping = false;
-  player.velocityY = playerJumpVelocity;
-
-  if (playerActivated === false) {
-    playerActivated = true;
-    gameLoop(timeStamp);
-  }
-
-  console.log(event + "detected");
-});
-
-restartButton.addEventListener("click", () => {
-  console.log("restarting!");
-  document.location.reload();
-  // resetGame();
-});
-
 //* Game Loop Settings (research delta time!)
 let secondsPassed,
   lastTimeStamp,
@@ -116,11 +93,12 @@ let movingSpeed = 50; //! is this used?
 ////////////////////////////////
 const gameLoop = (timeStamp) => {
   let id = window.requestAnimationFrame;
+  checkHighScore(score);
+
   //* time calculation
   secondsPassed = (timeStamp - lastTimeStamp) / 1000; // number of frames to produce this.
-  lastTimeStamp = timeStamp;
-
   secondsPassed = Math.min(secondsPassed, 0.1);
+  lastTimeStamp = timeStamp;
   fps = 1 / secondsPassed;
 
   //* clear screen for next frame phase
@@ -168,7 +146,7 @@ const gameLoop = (timeStamp) => {
   //* screen cosmetics
   bgCtx.font = "16px Josefin Sans";
   bgCtx.fillStyle = "white";
-  bgCtx.fillText(`Score: ${score}`, 20, 20);
+  bgCtx.fillText(`Score: ${score}  |  HighScore: ${highScore}`, 20, 20);
   particlesHandler();
 
   //* camera translate
@@ -195,6 +173,12 @@ const gameLoop = (timeStamp) => {
 const player = new Player();
 generateSnow();
 
+if (localStorage.getItem("highscore" === null)) {
+  highScore = localStorage.setItem("highscore", 0);
+} else {
+  highScore = localStorage.getItem("highscore");
+}
+
 const makeNewBells = generateXArr(currCol, startNumBells, difficulty);
 const startingBellY = player.y - canvas.height / 2;
 generateBell(makeNewBells, startingBellY, startNumBells);
@@ -220,3 +204,35 @@ if (playerActivated) {
   ctx.fillText(message2, canvas.width / 2 - textWidth2, canvas.height / 2 + 50);
   console.log("NOT STARTED");
 }
+
+//* ***EVENT LISTENERS*** *//
+// resize canvas when window size changes
+// window.addEventListener("resize", () => {
+//   bgCanvas.width = window.innerWidth;
+//   bgCanvas.height = window.innerHeight;
+// });
+
+// detect mouse moves
+document.addEventListener("mousemove", (event) => {
+  mouse.x = event.x;
+  mouse.y = event.y;
+});
+
+// detect mouse clicks
+document.addEventListener("mousedown", (event) => {
+  mouseClick = true;
+  player.jumping = false;
+  player.velocityY = playerJumpVelocity;
+
+  if (playerActivated === false) {
+    playerActivated = true;
+    gameLoop(timeStamp);
+  }
+  console.log(event + "detected");
+});
+
+// detect user selecting restart
+restartButton.addEventListener("click", () => {
+  console.log("restarting!");
+  document.location.reload();
+});

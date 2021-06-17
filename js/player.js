@@ -26,26 +26,26 @@ class Player {
     if (!playerActivated) {
       return;
     } // prevent left right movement till screen is clicked.
-
+    this.calibrateMouse();
     this.playerJump();
     this.hasCollided();
-    this.calibrateMouse();
     this.checkBoundaries();
 
     this.y += gravityPull * 2;
     this.velocityY *= 0.9;
   }
   draw() {
+    ctx.save();
     ctx.beginPath();
     ctx.fillStyle = this.color;
     ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fill();
+    ctx.restore();
   }
   addScore() {
     score += 100;
   }
   calibrateMouse() {
-    // let dx = Math.round(Math.floor(mouse.x - this.x) / this.velocityX);
     let dx = Math.round(Math.floor(mouse.x - this.x));
 
     //* scale down dx
@@ -83,12 +83,9 @@ class Player {
     if (mouseClick && this.jumping === false) {
       if (firstClick) {
         firstClick = false;
-        player.x = canvas.width / 2;
-        player.y = canvas.height - this.height;
-        mouse.x = player.x;
-        mouse.y = player.y;
+        this.x = canvas.width / 2;
+        this.y = canvas.height - this.height;
       } else {
-        // this.y += 50 * secondsPassed;  //! change to seconds
         this.velocityY -= playerJump * 2.5;
         this.y += this.velocityY;
       }
