@@ -122,9 +122,10 @@ const gameLoop = (timeStamp) => {
     }
   }
 
-  //* bell code
+  //*handlers
   bellRender(bellArray);
   balloonHandler();
+  floatingMessagesHandler();
 
   //* player position calculations
   playerHeight = Math.floor((canvas.height - player.y) / 100);

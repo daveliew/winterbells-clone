@@ -120,6 +120,11 @@ const bellRender = (arr) => {
     arr[i].update();
     arr[i].draw(secondsPassed);
     hasCollided(player, arr[i]);
+    if (arr[i].collided) {
+      floatingMessages.push(
+        new Message("hello", arr[i].x, arr[i].y, 30, "blue")
+      );
+    }
     if (arr[i].collided || arr[i].y > canvas.height - 100) {
       arr.splice(i, 1);
       // remove bell from array to manage total #objects
