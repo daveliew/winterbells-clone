@@ -1,15 +1,15 @@
 /** @type {HTMLCanvasElement} */
 //! TO DO LIST
 //* core game build
-//! tune bellRender() --> translation causes bells to end up in same col?
 //? add viewport + fix bg image
 //? add sprites
 //? add bird to double bonus
 //? refactor code --> clear all //? stuff.
 //* optimisation
-//? create background image
+//? tune bellRender() --> translation causes bells to end up in same col?
 //? add delta time
 //? save max score to local storage?
+//? create background image
 //? add pre-rendering for main character
 //////////////////
 //* ***DATA*** *//
@@ -63,6 +63,15 @@ const hasCollided = (player, bell) => {
   }
 };
 
+const gameOver = () => {
+  console.log("YOU LOST!");
+  restartButton.style.display = "block";
+  gameOverMessage.textContent = `Good try! Your score is ${score}.`;
+  gameOverMessage.style.display = "block";
+  playerActivated = false;
+  window.cancelAnimationFrame(id);
+};
+
 //* ***EVENT LISTENERS*** *//
 window.addEventListener("resize", () => {
   bgCanvas.width = window.innerWidth;
@@ -94,15 +103,13 @@ restartButton.addEventListener("click", () => {
   // resetGame();
 });
 
-//! do i need gameover stop?
-const gameOver = () => {
-  console.log("YOU LOST!");
-  restartButton.style.display = "block";
-  gameOverMessage.textContent = `Good try! Your score is ${score}.`;
-  gameOverMessage.style.display = "block";
-  playerActivated = false;
-  window.cancelAnimationFrame(id);
-};
+//* Game Loop Settings (research delta time!)
+let secondsPassed,
+  lastTimeStamp,
+  timeStamp,
+  highestHeight = 0;
+let fps = 1;
+let movingSpeed = 50; //! is this used?
 
 ////////////////////////////////
 //* *** GAME LOOP *** *//
@@ -110,9 +117,11 @@ const gameOver = () => {
 const gameLoop = (timeStamp) => {
   let id = window.requestAnimationFrame;
   //* time calculation
-  secondsPassed = (timeStamp - lastTimeStamp) / 1000;
-  secondsPassed = Math.min(secondsPassed, 0.1);
+  secondsPassed = (timeStamp - lastTimeStamp) / 1000; // number of frames to produce this.
   lastTimeStamp = timeStamp;
+
+  secondsPassed = Math.min(secondsPassed, 0.1);
+  fps = 1 / secondsPassed;
 
   //* clear screen for next frame phase
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -174,8 +183,9 @@ const gameLoop = (timeStamp) => {
   //! TEST AREA
   // console.log("player X pos and velocity", player.x, player.velocityX);
   // console.log("player Y pos and velocity", player.y, player.velocityY);
-  // console.log(canvas.height - player.height);
+  // console.log("ground level: ",canvas.height - player.height);
   // console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
+  // console.log("FPS: ",fps);
 };
 
 ////////////////////////////////
@@ -188,14 +198,6 @@ generateSnow();
 const makeNewBells = generateXArr(currCol, startNumBells, difficulty);
 const startingBellY = player.y - canvas.height / 2;
 generateBell(makeNewBells, startingBellY, startNumBells);
-
-//*Handle Dynamic Frames using timeStamp (research Delta Time)
-let secondsPassed,
-  lastTimeStamp,
-  timeStamp,
-  highestHeight = 0;
-
-let movingSpeed = 50; //! is this used?
 
 if (playerActivated) {
   gameLoop(timeStamp);
