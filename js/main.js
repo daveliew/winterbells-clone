@@ -1,13 +1,13 @@
 /** @type {HTMLCanvasElement} */
 //! TO DO LIST
 //* core game build
-//? add viewport + fix bg image
 //? add sprites
 //? add bird to double bonus
 //? refactor code --> clear all //? stuff.
 //* optimisation
 //? floating message score
 //? tune bellRender() --> translation causes bells to end up in same col?
+//? add viewport + fix bg image
 //? add delta time
 //? create background image
 //? add pre-rendering for main character
@@ -35,11 +35,10 @@ const mouse = {
 let playerActivated = false;
 let mouseClick = false;
 let gameFrame = 0;
-let lowestBell = {}; //! is this useless?
+let lowestBell = {};
 let firstClick = true;
 
 //* in-game calculations
-let cameraPositionY = 0; //! work on viewport later
 let playerHeight = 0;
 let crossedHeight = false;
 let score = 0;
@@ -65,9 +64,11 @@ const hasCollided = (player, bell) => {
   if (distance < collisionDistance) {
     player.collided = true;
     bell.collided = true;
+    player.jumping = true;
     player.y = playerJump;
     player.velocityY = playerJumpVelocity;
     player.addScore();
+
     return true;
   }
 };
@@ -121,6 +122,7 @@ const gameLoop = (timeStamp) => {
   }
 
   //* bell code
+
   bellRender(bellArray);
 
   //* player position calculations
@@ -129,6 +131,7 @@ const gameLoop = (timeStamp) => {
   if (playerHeight > highestHeight) {
     highestHeight = playerHeight;
     crossedHeight = true;
+
     if (highestHeight >= 2 && highestHeight % 2 === 0) {
       //! tune this
       crossedHeight = false;
@@ -139,15 +142,15 @@ const gameLoop = (timeStamp) => {
   //* player code
   player.update(secondsPassed);
   player.draw();
-  // lowestBell = bellArray[0];
-  // hasCollided(player, lowestBell); //! think about which bell it is later
+  lowestBell = bellArray[0];
+  hasCollided(player, lowestBell); //! think about which bell it is later
 
   //* snow code
   snowCtx.fillStyle = "rgba(40,48,56,0.25)";
   snowRender(snow.snowArray);
   if (gameFrame % framesPerSnow === 0) {
     generateSnow(); //only generate snow every 200 frames
-    // console.log("***BELLS STATUS***", bellArray);
+    console.log("***BELLS STATUS***", bellArray);
   }
 
   //* screen cosmetics
@@ -155,9 +158,6 @@ const gameLoop = (timeStamp) => {
   bgCtx.fillStyle = "white";
   bgCtx.fillText(`Score: ${score}  |  HighScore: ${highScore}`, 20, 20);
   particlesHandler();
-
-  //* camera translate
-  // cameraDraw();
 
   //* Incrementors + resets
   hue += 2; // change trail colour
@@ -214,10 +214,10 @@ if (playerActivated) {
 
 //* ***EVENT LISTENERS*** *//
 // resize canvas when window size changes
-// window.addEventListener("resize", () => {
-//   bgCanvas.width = window.innerWidth;
-//   bgCanvas.height = window.innerHeight;
-// });
+window.addEventListener("resize", () => {
+  bgCanvas.width = window.innerWidth;
+  bgCanvas.height = window.innerHeight;
+});
 
 // detect mouse moves
 document.addEventListener("mousemove", (event) => {

@@ -14,11 +14,13 @@ class Particle {
     this.y += this.speedY;
   }
   draw() {
+    ctx.save();
     ctx.beginPath();
     ctx.fillStyle = this.color;
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.stroke();
     ctx.fill();
+    ctx.restore();
   }
 }
 

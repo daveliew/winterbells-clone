@@ -1,7 +1,7 @@
 //! add player image sprite
 //! to investigate view port + culling
 
-const playerJump = bellSpacing * 1.5;
+const playerJump = bellSpacing * 1.3;
 const playerJumpVelocity = -8;
 let jumped = false;
 
@@ -22,11 +22,9 @@ class Player {
     this.collided = false;
   }
   update(secondsPassed) {
-    //! do we need secondsPassed or mass?
-    if (!playerActivated) {
-      return;
-    } // prevent left right movement till screen is clicked.
-    this.calibrateMouse();
+    if (!playerActivated) return; // prevent left right movement till screen is clicked.
+
+    this.mouseMovement();
     this.playerJump();
     this.hasCollided();
     this.checkBoundaries();
@@ -35,17 +33,15 @@ class Player {
     this.velocityY *= 0.9;
   }
   draw() {
-    ctx.save();
     ctx.beginPath();
     ctx.fillStyle = this.color;
     ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fill();
-    ctx.restore();
   }
   addScore() {
     score += 100;
   }
-  calibrateMouse() {
+  mouseMovement() {
     let dx = Math.round(Math.floor(mouse.x - this.x));
 
     //* scale down dx
@@ -62,7 +58,6 @@ class Player {
       this.velocityY -= playerJump / 2;
       this.y += this.velocityY;
       this.collided = false;
-      // jumped = true; //! camera pan?
     }
   }
   checkBoundaries() {

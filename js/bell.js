@@ -17,8 +17,7 @@ class Bell {
     this.id = 0;
   }
   update() {
-    //! falling bell generates if player has not touched any bells.
-    //! bells will stop when player collides
+    // falling bell generates if player has not touched any bells.
     // if (score === 0) {
     this.velocityY = 0.5;
     this.x += this.velocityX;
@@ -28,13 +27,11 @@ class Bell {
     this.velocityY *= 0.9;
     // }
   }
-  draw() {
-    ctx.save();
+  draw(secondsPassed) {
     ctx.fillStyle = this.color;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fill();
-    ctx.restore();
   }
 }
 
@@ -106,14 +103,13 @@ const generateBell = (arr, posY, numBells) => {
 
 const bellRender = (arr) => {
   const bellTranslation = bellSpacing;
-  //! tune this (BELL)
   for (let i = 0; i < arr.length; i++) {
     if (crossedHeight || arr[1].y < canvas.height / 4) {
       arr[i].y = arr[i].y + bellTranslation;
       console.log("we're going places!");
     }
     arr[i].update();
-    arr[i].draw();
+    arr[i].draw(secondsPassed);
     hasCollided(player, arr[i]);
     if (arr[i].collided === true || arr[i].y > canvas.height - 100) {
       arr.splice(i, 1); // remove bell from array to manage total #objects
