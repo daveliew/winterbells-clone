@@ -138,9 +138,9 @@ const gameLoop = (timeStamp) => {
   }
 
   //* screen cosmetics
-  bgCtx.font = "20px Josefin Sans";
+  bgCtx.font = "16px Josefin Sans";
   bgCtx.fillStyle = "white";
-  bgCtx.fillText(`Score: ${score}`, 20, 25);
+  bgCtx.fillText(`Score: ${score}`, 20, 20);
   particlesHandler();
 
   //* camera translate
