@@ -27,7 +27,7 @@ h2 {
 #background-layer {
   position: fixed;
   background: rgba(0, 200, 200, 0.7);
-  background-image: linear-gradient(black, white);
+  background-image: linear-gradient(black, mistyrose);
   top: 55%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -58,4 +58,37 @@ h2 {
   height: 416px;
   border: 2px solid black;
   z-index: 3;
+}
+
+#restart {
+  width: 100px;
+  height: 100px;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  border: none;
+  border-radius: 50%;
+  color: gainsboro;
+  background-color: darkslategray;
+  font-weight: 700;
+  font-size: 1.2em;
+  display: none;
+  cursor: pointer;
+  z-index: 4;
+}
+
+#gameover {
+  width: auto;
+  text-align: center;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  color: mistyrose;
+  border: none;
+  font-weight: 700;
+  font-size: 1.2em;
+  display: none;
+  z-index: 4;
 }

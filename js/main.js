@@ -11,16 +11,26 @@
 //* optimisation
 //? create background image
 //? add delta time
-//? save max score
+//? save max score to local storage?
 //? add pre-rendering for main character
 //////////////////
 //* ***DATA*** *//
 //////////////////
+const restartButton = document.getElementById("restart");
+const gameOverMessage = document.getElementById("gameover");
+
+//* customisable game settings
 const audioObj = new Audio("/assets/winterbells.mp3");
 audioObj.play();
 
 const gravityPull = 2.5;
 const framesPerSnow = 200;
+
+//* initial game settings
+const mouse = {
+  x: canvas.width,
+  y: canvas.height,
+};
 
 let playerActivated = false;
 let mouseClick = false;
@@ -28,15 +38,11 @@ let gameFrame = 0;
 let lowestBell = {}; //! is this useless?
 let firstClick = true;
 
+//* in-game calculations
 let playerHeight = 0;
 let crossedHeight = false;
 let score = 0;
 let cameraPositionY = 0; //! work on viewport later
-
-const mouse = {
-  x: canvas.width,
-  y: canvas.height,
-};
 
 /////////////////////////
 //* *** FUNCTIONS *** *//
@@ -81,29 +87,44 @@ document.addEventListener("mousedown", (event) => {
   }
 
   console.log(event + "detected");
+});
 
-  //? find a way to remove mousedown after click so that player must use bells to jump
-  //? https://www.geeksforgeeks.org/javascript-removeeventlistener-method-with-examples/
+restartButton.addEventListener("click", () => {
+  console.log("restarting!");
+  document.location.reload();
+  // resetGame();
 });
 
 //! do i need gameover stop?
-// const stopGameLoop = () => {
-//   window.cancelAnimationFrame(requestAnimationFrameId);
-// };
+const gameOver = () => {
+  console.log("YOU LOST!");
+  restartButton.style.display = "block";
+  gameOverMessage.textContent = `Good try! Your score is ${score}.`;
+  gameOverMessage.style.display = "block";
+
+  window.cancelAnimationFrame(id);
+};
 
 ////////////////////////////////
 //* *** GAME LOOP *** *//
 ////////////////////////////////
 const gameLoop = (timeStamp) => {
   //* time calculation
-  secondsPassed = (timeStamp - oldTimeStamp) / 1000;
+  secondsPassed = (timeStamp - lastTimeStamp) / 1000;
   secondsPassed = Math.min(secondsPassed, 0.1);
-  oldTimeStamp = timeStamp;
+  lastTimeStamp = timeStamp;
 
   //* clear screen for next frame phase
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   bgCtx.clearRect(0, 0, canvas.width, canvas.height);
   snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+
+  //* check gameover
+  if (firstClick === false && score > 0) {
+    if (player.y >= canvas.height - player.height) {
+      gameOver();
+    }
+  }
 
   //* bell code
   bellRender(bellArray);
@@ -152,7 +173,8 @@ const gameLoop = (timeStamp) => {
 
   //! TEST AREA
   // console.log("player X pos and velocity", player.x, player.velocityX);
-  // console.log("player Y pos and velocity", player.y, player.velocityY);
+  console.log("player Y pos and velocity", player.y, player.velocityY);
+  console.log(canvas.height - player.height);
   // console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
 };
 
@@ -169,15 +191,13 @@ generateBell(makeNewBells, startingBellY);
 
 //*Handle Dynamic Frames using timeStamp (research Delta Time)
 let secondsPassed,
-  oldTimeStamp,
+  lastTimeStamp,
   timeStamp,
   highestHeight = 0;
 
 let movingSpeed = 50; //! is this used?
 
 if (playerActivated) {
-  // mouse.x = canvas.width / 2;
-  // mouse.y = canvas.height / 2; //! do i need to reset mouse?
   gameLoop(timeStamp);
 } else {
   const message1 = "Welcome to Winterbells!";
