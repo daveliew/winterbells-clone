@@ -7,8 +7,8 @@ bgCanvas.width = GAME_WIDTH;
 bgCanvas.height = GAME_HEIGHT;
 
 //! background image
-//const img = new Image();
-// img.src = "../assets/maria-vojtovicova-snow.jpg";
+// const img = new Image();
+// img.src = "../assets/winterbells_rabbit.png";
 
 //* snow layer
 const snowCanvas = document.getElementById("snow-layer");

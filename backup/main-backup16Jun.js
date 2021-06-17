@@ -4,10 +4,11 @@
 //? add gameover
 //? add condition that after first bell is caught, gameover sequence triggered
 //? add viewport + fix bg image
-//? add sprites
 //? add bird to double bonus
 //? refactor code --> clear all //? stuff.
+//? fix CSS and screensize
 //* optimisation
+//? add sprites
 //? create background image
 //? add delta time
 //? save max score
@@ -150,7 +151,7 @@ const gameLoop = (timeStamp) => {
   requestAnimationFrame(gameLoop); // recursive game loop
 
   //! TEST AREA
-  // console.log("player X pos and velocity", player.x, player.velocityX);
+  console.log("player X pos and velocity", player.x, player.velocityX);
   // console.log("player Y pos and velocity", player.y, player.velocityY);
   // console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
 };

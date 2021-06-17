@@ -1,32 +1,33 @@
-//! create a function that can return an array of random numbers to use to set a bell with
-//! has an inner function to generate random number
+//! testing camera for player
 
-const prevX = 2;
-const range = 5;
+// const yourWorld = {
+//   minX: player.x,
+//   maxX: player.x,
+//   minY: player.y,
+//   maxY: player.y,
+// };
 
-const randNum = (num, range) => {
-  let r = 0;
-  r = Math.round(Math.random() * (range - 1)) - Math.floor((range - 1) / 2);
-  return num + r;
-};
+// const clamp = (value, min, max) => {
+//   if (value < min) return min;
+//   else if (value > max) return max;
+//   return value;
+// };
 
-const generateXArr = (start, arrLength, range) => {
-  let result = [];
-  result.push(start);
-  let curr = start;
-  let next = curr;
+// const cameraDraw = () => {
+//   ctx.setTransform(1, 0, 0, 1, 0, 0); //reset the transform matrix as it is cumulative
+//   ctx.clearRect(0, 0, canvas.width, canvas.height); //clear the viewport AFTER the matrix is reset
 
-  for (i = 0; i < arrLength - 1; i++) {
-    curr = next;
-    while (curr === next) {
-      next = randNum(start, range);
-    }
-    result.push(next);
-  }
+//   //Clamp the camera position to the world bounds while centering the camera around the player
+//   var camX = clamp(
+//     -player.x + canvas.width / 2,
+//     yourWorld.minX,
+//     yourWorld.maxX - canvas.width
+//   );
+//   var camY = clamp(
+//     -player.y + canvas.height / 2,
+//     yourWorld.minY,
+//     yourWorld.maxY - canvas.height
+//   );
 
-  return result;
-};
-
-const start = 6;
-const numBells = 10;
-console.log(generateXArr(start, numBells, range));
+//   ctx.translate(camX, camY);
+// };

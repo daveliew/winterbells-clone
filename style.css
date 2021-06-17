@@ -8,6 +8,8 @@ h1 {
   text-align: center;
   color: mistyrose;
   margin: 0 auto;
+  margin-top: 3%;
+  margin-bottom: 3%;
 }
 
 h2 {
@@ -15,6 +17,7 @@ h2 {
   font-size: 1em;
   color: gainsboro;
   margin: 0 auto;
+  margin-bottom: 3%;
 }
 
 #background-layer {

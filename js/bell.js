@@ -27,6 +27,7 @@ class Bell {
     // }
   }
   draw() {
+    // ctx.translate(0, player.y - 100);
     ctx.fillStyle = this.color;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -107,12 +108,12 @@ const bellRender = (arr) => {
   const bellTranslation = bellSpacing;
 
   for (let i = 0; i < arr.length; i++) {
-    if (crossedHeight || arr[1].y < canvas.height / 4) {
-      //! tune this (BELL)
-      // if (crossedHeight) {
-      arr[i].y = arr[i].y + bellTranslation;
-      console.log("we're going places!");
-    }
+    // if (crossedHeight || arr[1].y < canvas.height / 4) {
+    //   //! tune this (BELL)
+    //   // if (crossedHeight) {
+    //   arr[i].y = arr[i].y + bellTranslation;
+    //   console.log("we're going places!");
+    // }
     arr[i].update();
     arr[i].draw();
     hasCollided(player, arr[i]);

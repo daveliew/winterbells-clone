@@ -3,6 +3,7 @@
 
 const playerJump = bellSpacing * 1.5;
 const playerJumpVelocity = -8;
+let jumped = false;
 
 /////////////////////////
 //* Generate Player
@@ -31,6 +32,7 @@ class Player {
       // if (firstClick) {  //! player fix
       //   firstClick = false;
       // }
+
       // this.y += 50 * secondsPassed;  //! change to seconds
       this.velocityY -= playerJump * 2.5;
       this.y += this.velocityY;
@@ -45,6 +47,7 @@ class Player {
       this.velocityY -= playerJump / 2;
       this.y += this.velocityY;
       this.collided = false;
+      jumped = true; //! camera pan?
     }
 
     //? trying this method to "calibrate mouse move to x move". wrap this in condition?
@@ -79,6 +82,10 @@ class Player {
     ctx.fillStyle = this.color;
     ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fill();
+    // if (jumped) {
+    //   ctx.translate(0, playerJump);
+    //   jumped = false;
+    // }
   }
   addScore() {
     score += 100;
