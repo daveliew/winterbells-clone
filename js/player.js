@@ -27,55 +27,14 @@ class Player {
       return;
     } // prevent left right movement till screen is clicked.
 
-    if (mouseClick && this.jumping === false) {
-      if (firstClick) {
-        firstClick = false;
-        player.x = canvas.width / 2;
-        player.y = canvas.height - this.height;
-      } else {
-        // this.y += 50 * secondsPassed;  //! change to seconds
-        this.velocityY -= playerJump * 2.5;
-        this.y += this.velocityY;
-      }
-      mouseClick = false;
-      this.jumping = true;
-    }
+    this.playerJump();
+    this.hasCollided();
+    this.calibrateMouse();
+    this.checkBoundaries();
 
-    if (this.collided) {
-      // this.velocityY += -10; //! TUNE
-      // this.y -= playerJump;
-      this.velocityY -= playerJump / 2;
-      this.y += this.velocityY;
-      this.collided = false;
-      // jumped = true; //! camera pan?
-    }
-
-    //? trying this method to "calibrate mouse move to x move". wrap this in condition?
-    let dx = Math.round(Math.floor(mouse.x - this.x) / this.velocityX);
-
-    //* scale down dx
-    if (dx > this.velocityX) {
-      dx /= this.velocityX;
-      dx = Math.round(dx);
-    }
-
-    this.x += dx;
-    // this.y += movingSpeed * secondsPassed;
+    //! this.y += movingSpeed * secondsPassed;  --> would this help?
     this.y += gravityPull * 2;
     this.velocityY *= 0.9;
-
-    //*prevent player from leaving canvas
-    if (this.x < 0) {
-      this.x = 0;
-    } else if (this.x + this.width > canvas.width) {
-      this.x = canvas.width - this.width;
-    }
-
-    if (this.y >= canvas.height - this.height) {
-      this.y = canvas.height - this.height;
-      this.velocityY = 0; //? learn this properly
-      this.jumping = false;
-    }
   }
   draw() {
     ctx.beginPath();
@@ -89,5 +48,56 @@ class Player {
   }
   addScore() {
     score += 100;
+  }
+  calibrateMouse() {
+    let dx = Math.round(Math.floor(mouse.x - this.x) / this.velocityX);
+
+    //* scale down dx
+    if (dx > this.velocityX) {
+      dx /= this.velocityX;
+      dx = Math.round(dx);
+    }
+
+    this.x += dx;
+  }
+  hasCollided() {
+    //* checks if player has touched a bell
+    if (this.collided) {
+      this.velocityY -= playerJump / 2;
+      this.y += this.velocityY;
+      this.collided = false;
+      // jumped = true; //! camera pan?
+    }
+  }
+  checkBoundaries() {
+    //* prevents player from leaving canvas
+    if (this.x < 0) {
+      this.x = 0;
+    } else if (this.x + this.width > canvas.width) {
+      this.x = canvas.width - this.width;
+    }
+
+    if (this.y >= canvas.height - this.height) {
+      this.y = canvas.height - this.height;
+      this.velocityY = 0;
+      this.jumping = false;
+    }
+  }
+  playerJump() {
+    if (mouseClick && this.jumping === false) {
+      if (firstClick) {
+        firstClick = false;
+        player.x = canvas.width / 2;
+        player.y = canvas.height - this.height;
+        mouse.x = player.x;
+        mouse.y = player.y;
+      } else {
+        // this.y += 50 * secondsPassed;  //! change to seconds
+        this.velocityY -= playerJump * 2.5;
+        this.y += this.velocityY;
+      }
+      mouseClick = false;
+      this.jumping = true;
+    }
   }
 }

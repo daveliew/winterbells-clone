@@ -1,9 +1,7 @@
 /** @type {HTMLCanvasElement} */
 //! TO DO LIST
 //* core game build
-//? add gameover
 //! tune bellRender() --> translation causes bells to end up in same col?
-//? add condition that after first bell is caught, gameover sequence triggered
 //? add viewport + fix bg image
 //? add sprites
 //? add bird to double bonus
@@ -25,6 +23,7 @@ audioObj.play();
 
 const gravityPull = 2.5;
 const framesPerSnow = 200;
+const startNumBells = 10; //* change number of bells generated on load
 
 //* initial game settings
 const mouse = {
@@ -109,7 +108,7 @@ const gameOver = () => {
 //* *** GAME LOOP *** *//
 ////////////////////////////////
 const gameLoop = (timeStamp) => {
-  let id = requestAnimationFrame.id;
+  let id = window.requestAnimationFrame;
   //* time calculation
   secondsPassed = (timeStamp - lastTimeStamp) / 1000;
   secondsPassed = Math.min(secondsPassed, 0.1);
@@ -186,9 +185,9 @@ const gameLoop = (timeStamp) => {
 const player = new Player();
 generateSnow();
 
-const makeNewBells = generateXArr(currCol, numBells, difficulty);
+const makeNewBells = generateXArr(currCol, startNumBells, difficulty);
 const startingBellY = player.y - canvas.height / 2;
-generateBell(makeNewBells, startingBellY);
+generateBell(makeNewBells, startingBellY, startNumBells);
 
 //*Handle Dynamic Frames using timeStamp (research Delta Time)
 let secondsPassed,
