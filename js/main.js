@@ -101,7 +101,7 @@ const gameOver = () => {
   restartButton.style.display = "block";
   gameOverMessage.textContent = `Good try! Your score is ${score}.`;
   gameOverMessage.style.display = "block";
-
+  playerActivated = false;
   window.cancelAnimationFrame(id);
 };
 
@@ -109,6 +109,7 @@ const gameOver = () => {
 //* *** GAME LOOP *** *//
 ////////////////////////////////
 const gameLoop = (timeStamp) => {
+  let id = requestAnimationFrame.id;
   //* time calculation
   secondsPassed = (timeStamp - lastTimeStamp) / 1000;
   secondsPassed = Math.min(secondsPassed, 0.1);
@@ -173,8 +174,8 @@ const gameLoop = (timeStamp) => {
 
   //! TEST AREA
   // console.log("player X pos and velocity", player.x, player.velocityX);
-  console.log("player Y pos and velocity", player.y, player.velocityY);
-  console.log(canvas.height - player.height);
+  // console.log("player Y pos and velocity", player.y, player.velocityY);
+  // console.log(canvas.height - player.height);
   // console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
 };
 
