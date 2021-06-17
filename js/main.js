@@ -19,12 +19,15 @@ const gameOverMessage = document.getElementById("gameover");
 const canvasPosition = canvas.getBoundingClientRect(); // retrieve canvas x, y pos
 
 //* customisable game settings
-const audioObj = new Audio("/assets/winterbells.mp3");
-audioObj.play();
+const bgMusic = new Audio("/assets/winterbells.mp3");
+const rocketSound = new Audio("/assets/rocket.wav");
+const burstSound = new Audio("/assets/burst.wav");
+const awwSound = new Audio("/assets/aww.mp3");
+bgMusic.play();
 
 const gravityPull = 2.5;
 const framesPerSnow = 200;
-const startNumBells = 10; //* change number of bells generated on load
+const startNumBells = 20; //* change number of bells generated on load
 
 //* initial game settings
 const mouse = {
@@ -37,6 +40,8 @@ let mouseClick = false;
 let gameFrame = 0;
 let lowestBell = {};
 let firstClick = true;
+let boosts = 10;
+let bursts = 0;
 
 //* in-game calculations
 let playerHeight = 0;
@@ -54,16 +59,16 @@ const checkHighScore = (score) => {
   }
 };
 
-const hasCollided = (player, bell) => {
-  const collisionDistance = player.width + bell.size;
+const hasCollided = (player, obj) => {
+  const collisionDistance = player.width + obj.size;
 
   const distance = Math.sqrt(
-    Math.pow(player.x - bell.x, 2) + Math.pow(player.y - bell.y, 2)
+    Math.pow(player.x - obj.x, 2) + Math.pow(player.y - obj.y, 2)
   );
 
   if (distance < collisionDistance) {
     player.collided = true;
-    bell.collided = true;
+    obj.collided = true;
     player.jumping = true;
     player.y = playerJump;
     player.velocityY = playerJumpVelocity;
@@ -116,26 +121,25 @@ const gameLoop = (timeStamp) => {
   //* check gameover
   checkHighScore(score);
   if (firstClick === false && score > 0) {
-    if (player.y >= canvas.height - player.height) {
+    if (player.y >= canvas.height - player.height || boosts === 0) {
+      awwSound.play();
       gameOver();
     }
   }
 
   //* bell code
-
   bellRender(bellArray);
+  balloonHandler();
 
   //* player position calculations
   playerHeight = Math.floor((canvas.height - player.y) / 100);
 
-  if (playerHeight > highestHeight) {
+  if (playerHeight > highestHeight && playerHeight === 3) {
     highestHeight = playerHeight;
     crossedHeight = true;
 
     if (highestHeight >= 2 && highestHeight % 2 === 0) {
-      //! tune this
       crossedHeight = false;
-      console.log("CROSSED HEIGHT!");
     }
   }
 
@@ -143,20 +147,24 @@ const gameLoop = (timeStamp) => {
   player.update(secondsPassed);
   player.draw();
   lowestBell = bellArray[0];
-  hasCollided(player, lowestBell); //! think about which bell it is later
+  hasCollided(player, lowestBell);
 
   //* snow code
   snowCtx.fillStyle = "rgba(40,48,56,0.25)";
   snowRender(snow.snowArray);
   if (gameFrame % framesPerSnow === 0) {
     generateSnow(); //only generate snow every 200 frames
-    console.log("***BELLS STATUS***", bellArray);
+    // console.log("***BELLS STATUS***", bellArray);
   }
 
   //* screen cosmetics
   bgCtx.font = "16px Josefin Sans";
   bgCtx.fillStyle = "white";
-  bgCtx.fillText(`Score: ${score}  |  HighScore: ${highScore}`, 20, 20);
+  bgCtx.fillText(
+    `HighScore: ${highScore} | Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
+    20,
+    20
+  );
   particlesHandler();
 
   //* Incrementors + resets
@@ -193,23 +201,30 @@ generateBell(makeNewBells, startingBellY, startNumBells);
 if (playerActivated) {
   gameLoop(timeStamp);
 } else {
-  const h1Text = "Welcome to Winterbells!";
+  const h1Text = "Welcome to !Winterbells";
   const h1TextWidth = snowCtx.measureText(h1Text).width;
   snowCtx.font = "36px Josefin Sans";
   snowCtx.fillStyle = "white";
 
-  const h2Text = "Left-click to start. Use the mouse to move left or right.";
+  const h2Text =
+    "Move mouse for left or right. Left Click to boost. Careful - there's a price!";
   const h2TextWidth = ctx.measureText(h2Text).width;
-  ctx.font = "20px Josefin Sans";
+  ctx.font = "16px Josefin Sans";
   ctx.fillStyle = "darkslategreen";
+
+  const h3Text = "(P.S. Avoid the shiny things)";
+  const h3TextWidth = bgCtx.measureText(h3Text).width;
+  bgCtx.font = "13px Josefin Sans";
+  bgCtx.fillStyle = "darkslategrey";
 
   snowCtx.fillText(
     h1Text,
     snowCanvas.width / 2 - h1TextWidth * 1.8,
     snowCanvas.height / 2 - 50
   );
-  ctx.fillText(h2Text, canvas.width / 2 - h2TextWidth, canvas.height / 2 + 50);
-  console.log("NOT STARTED");
+  ctx.fillText(h2Text, canvas.width / 2 - 250, canvas.height / 2 + 50);
+  bgCtx.fillText(h3Text, GAME_WIDTH - 200, GAME_HEIGHT - 10);
+  console.log("GAME READY");
 }
 
 //* ***EVENT LISTENERS*** *//
@@ -234,7 +249,11 @@ document.addEventListener("mousedown", (event) => {
   if (playerActivated === false) {
     playerActivated = true;
     gameLoop(timeStamp);
+  } else {
+    boosts -= 1;
+    rocketSound.play();
   }
+
   console.log(event + "detected");
 });
 

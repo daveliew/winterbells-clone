@@ -1,7 +1,5 @@
-//! add player image sprite
-//! to investigate view port + culling
-
-const playerJump = bellSpacing * 1.3;
+const bellRing = new Audio("/assets/bell.wav");
+const playerJump = bellSpacing * 1.5;
 const playerJumpVelocity = -8;
 let jumped = false;
 
@@ -29,7 +27,7 @@ class Player {
     this.hasCollided();
     this.checkBoundaries();
 
-    this.y += gravityPull * 2;
+    this.y += gravityPull * 1.5;
     this.velocityY *= 0.9;
   }
   draw() {
@@ -40,6 +38,9 @@ class Player {
   }
   addScore() {
     score += 100;
+    if (score % 1000 === 0) {
+      bellRing.play();
+    }
   }
   mouseMovement() {
     let dx = Math.round(Math.floor(mouse.x - this.x));
@@ -72,6 +73,8 @@ class Player {
       this.y = canvas.height - this.height;
       this.velocityY = 0;
       this.jumping = false;
+    } else if (this.y <= 0) {
+      this.y = 100;
     }
   }
   playerJump() {

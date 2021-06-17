@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 
 canvas.width = GAME_WIDTH;
 canvas.height = GAME_HEIGHT;
+
 let bellID = 0;
 
 class Bell {
@@ -17,7 +18,6 @@ class Bell {
     this.id = 0;
   }
   update() {
-    // falling bell generates if player has not touched any bells.
     // if (score === 0) {
     this.velocityY = 0.5;
     this.x += this.velocityX;
@@ -37,7 +37,7 @@ class Bell {
 
 //* Bell Production Settings*//
 const bellArray = [];
-const difficulty = 3;
+const difficulty = 5;
 const bellSize = 10;
 const bellSpacing = canvas.height / 10; //vertical height
 
@@ -104,23 +104,24 @@ const generateBell = (arr, posY, numBells) => {
 const bellRender = (arr) => {
   const bellTranslation = bellSpacing;
   for (let i = 0; i < arr.length; i++) {
-    if (crossedHeight || arr[1].y < canvas.height / 4) {
+    if (crossedHeight || arr[1].y < canvas.height / 3) {
       arr[i].y = arr[i].y + bellTranslation;
       console.log("we're going places!");
     }
     arr[i].update();
     arr[i].draw(secondsPassed);
     hasCollided(player, arr[i]);
-    if (arr[i].collided === true || arr[i].y > canvas.height - 100) {
-      arr.splice(i, 1); // remove bell from array to manage total #objects
+    if (arr[i].collided || arr[i].y > canvas.height - 100) {
+      arr.splice(i, 1);
+      // remove bell from array to manage total #objects
     }
   }
 
-  const minBells = Math.floor(startNumBells / 2);
+  const minBells = Math.floor(startNumBells / 1.5);
 
   if (arr.length <= minBells) {
     const makeNewBells = generateXArr(currCol, minBells, difficulty);
-    const getBellX = bellArray[minBells - 2].x; // extract x position of bell in minBells-th position
+    const getBellX = bellArray[0].x; // extract x position of bell in minBells-th position
 
     currCol = bellXPos.indexOf(getBellX); // store that index number for next array creation
 
