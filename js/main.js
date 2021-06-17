@@ -6,7 +6,7 @@
 //? add bird to double bonus
 //? refactor code --> clear all //? stuff.
 //* optimisation
-//! fix highscore message
+//? floating message score
 //? tune bellRender() --> translation causes bells to end up in same col?
 //? add delta time
 //? create background image
@@ -16,6 +16,7 @@
 //////////////////
 const restartButton = document.getElementById("restart");
 const gameOverMessage = document.getElementById("gameover");
+const canvasPosition = canvas.getBoundingClientRect(); // retrieve canvas x, y pos
 
 //* customisable game settings
 const audioObj = new Audio("/assets/winterbells.mp3");
@@ -220,8 +221,8 @@ if (playerActivated) {
 
 // detect mouse moves
 document.addEventListener("mousemove", (event) => {
-  mouse.x = event.x;
-  mouse.y = event.y;
+  mouse.x = event.x - canvasPosition.left;
+  mouse.y = event.y - canvasPosition.top;
 });
 
 // detect mouse clicks

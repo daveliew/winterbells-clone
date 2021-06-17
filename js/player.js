@@ -82,6 +82,7 @@ class Player {
   playerJump() {
     if (mouseClick && this.jumping === false) {
       if (firstClick) {
+        canvas.style.cursor = "none";
         firstClick = false;
         this.x = canvas.width / 2;
         this.y = canvas.height - this.height;
