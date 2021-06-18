@@ -25,7 +25,7 @@ Welcome to my game project as part of SEI-30. You can view my pre-project work *
 4. Code Samples:
 
 **Function to loop through array with management of state and rendering**
-``
+```JavaScript
 const particlesHandler = () => {
   particlesArray.unshift(new Particle());
   for (let i = 0; i < particlesArray.length; i++) {
@@ -41,17 +41,19 @@ const particlesHandler = () => {
     }
   }
 };
-``
+```
 
 **Code for generating objects randomly across defined points of my canvas via nested functions, loops and arrays**
-``// [ 0 1 2 3 4 5 6 7 8]
-// [ - - - - - X - - -] 5
-// [ - X - - - - - - -] 4
-// [ - - - X - - - - -] 3
-// [ - - - - - X - - -] 2
-// [ - - - - X - - - -] 1
 ``
+ [ 0 1 2 3 4 5 6 7 8]
+ [ - - - - - X - - -] 5
+ [ - X - - - - - - -] 4
+ [ - - - X - - - - -] 3
+ [ - - - - - X - - -] 2
+ [ - - - - X - - - -] 1
 ``
+
+```JavaScript
 const bellXPos = [
   SCREEN_X_MID - colWidth * 4,
   SCREEN_X_MID - colWidth * 3,
