@@ -3,20 +3,56 @@ const playerJump = bellSpacing * 1.5;
 const playerJumpVelocity = -8;
 let jumped = false;
 
-const playerImage = new Image();
-playerImage.src = "/assets/Cubeman_jump.png";
-const spriteWidth = 339;
-const spriteHeight = 404;
+let chosenSprite;
+const playerRunSprite = new Image();
+playerRunSprite.src = "/assets/Cubeman_jump.png";
+
+const playerJumpSprite = new Image();
+playerJumpSprite.src = "/assets/Cubeman_jump.png";
+
+const spriteWidth = 1000;
+const spriteHeight = 1000;
 let frameX = 0;
 const staggerFrames = 5;
+const spriteAnimations = [];
+const spriteInfo = [
+  {
+    name: "run",
+    img: playerRunSprite,
+    frames: 10,
+    frameX: 493,
+    frameY: 450,
+  },
+  {
+    name: "jump",
+    img: playerJumpSprite,
+    frames: 11,
+    frameX: 410,
+    frameY: 450,
+  },
+];
+spriteInfo.forEach((sprite) => {
+  let frames = {
+    loc: [],
+  };
+  for (let i = 0; i < sprite.frames; i++) {
+    let posX = i * sprite.frameX;
+    let posY = sprite.frameY;
+    frames.loc.push({ x: posX, y: posY });
+  }
+  spriteAnimations[sprite.name] = frames;
+});
+console.log(spriteAnimations[spriteInfo[0].name].loc); //array of location objects
+console.log(playerRunSprite.src); //image src
+console.log(spriteInfo[0]); // individual sprite obj
 
 /////////////////////////
 //* Generate Player
 /////////////////////////
 class Player {
   constructor() {
-    this.width = 40;
-    this.height = 40;
+    this.width = 50;
+    this.height = 50;
     this.x = canvas.width / 2;
     this.y = canvas.height - this.height;
     this.color = "rgba(250,38,38,0.8)";
@@ -38,13 +74,40 @@ class Player {
     this.velocityY *= 0.9;
   }
   draw() {
-    // ctx.beginPath();
-    // ctx.fillStyle = this.color;
-    // ctx.rect(this.x, this.y, this.width, this.height);
+    let currFrame = 0;
+    if (this.velocityY === 0) {
+      chosenSprite = spriteInfo[0];
+    }
     //ctx.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh)
+    let position =
+      Math.floor(gameFrame / staggerFrames) %
+      spriteAnimations[spriteInfo[0].name].loc.length;
+    console.log("position", position);
+    // ctx.drawImage(
+    //   playerRunSprite,
+    //   spriteInfo[0].frameX,
+    //   spriteInfo[0].frameY,
+    //   chosenSprite.frameX,
+    //   chosenSprite.frameY,
+    //   this.x,
+    //   this.y,
+    //   this.width,
+    //   this.height
+    // );
+    // ctx.drawImage(
+    //   playerRunSprite,
+    //   spriteWidth,
+    //   spriteHeight,
+    //   spriteWidth,
+    //   spriteHeight,
+    //   this.x,
+    //   this.y,
+    //   this.width,
+    //   this.height
+    // );
     ctx.drawImage(
-      playerImage,
-      frameX * spriteWidth,
+      playerRunSprite,
+      currFrame * spriteWidth,
       0,
       spriteWidth,
       spriteHeight,
@@ -54,10 +117,10 @@ class Player {
       this.height
     );
     if (gameFrame % staggerFrames === 0) {
-      if (frameX < 10) {
-        frameX++;
+      if (currFrame < 10) {
+        currFrame++;
       } else {
-        frameX = 0;
+        currFrame = 0;
       }
     }
 

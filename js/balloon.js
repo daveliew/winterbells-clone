@@ -1,7 +1,7 @@
 // Balloons is a feature that players must avoid
 const balloonsArray = [];
 let balloonHue = 0;
-let balloonProduction = 100;
+let balloonProductionFrame = 100;
 
 class Balloon {
   constructor(x, y) {
@@ -10,7 +10,7 @@ class Balloon {
     this.velocityX = 1;
     this.velocityY = Math.round(Math.random() * 2) - 1;
     this.color = `hsl(${balloonHue}, 100%, 50%)`;
-    this.size = Math.floor(Math.random() * 5 + 5);
+    this.size = Math.floor(Math.random() * 5 + 7);
     this.collided = false;
   }
   update() {
@@ -37,12 +37,15 @@ const balloonHandler = () => {
       balloonsArray.splice(i, 1);
       console.log(balloonsArray);
     }
+
     balloonHue++;
   }
-  if (gameFrame % balloonProduction == 0) {
+  if (gameFrame % balloonProductionFrame == 0) {
     let x = Math.floor(Math.random() * canvas.width);
     let y = Math.floor(Math.random() * canvas.height - canvas.height / 2);
     let balloon = new Balloon(x, y);
     balloonsArray.push(balloon);
+
+    balloonProductionFrame--;
   }
 };

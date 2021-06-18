@@ -78,8 +78,10 @@ const gameOver = () => {
   canvas.style.cursor = "pointer";
   if (score === highScore) {
     gameOverMessage.textContent = `Nice! You set a new high score ${highScore}.`;
-  } else {
+  } else if (score > 0) {
     gameOverMessage.textContent = `Good try! Your score is ${score}.`;
+  } else {
+    gameOverMessage.textContent = `Hmm. Did you read the instructions? Your score is ${score}?!`;
   }
   restartButton.style.display = "block";
   gameOverMessage.style.display = "block";
@@ -115,7 +117,7 @@ const gameLoop = (timeStamp) => {
 
   //* check gameover
   checkHighScore(score);
-  if (firstClick === false && score > 0) {
+  if ((firstClick === false) & (player.bellsCollected > 0)) {
     if (player.y >= canvas.height - player.height || boosts === 0) {
       awwSound.play();
       gameOver();
@@ -125,7 +127,7 @@ const gameLoop = (timeStamp) => {
   //*handlers
   bellRender(bellArray);
   balloonHandler();
-  floatingMessagesHandler();
+  // floatingMessagesHandler(); // not executing properly
 
   //* player position calculations
   playerHeight = Math.floor((canvas.height - player.y) / 100);
@@ -157,15 +159,10 @@ const gameLoop = (timeStamp) => {
   bgCtx.font = "16px Josefin Sans";
   bgCtx.fillStyle = "white";
   bgCtx.fillText(
-    `Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
+    `HighScore: ${highScore} | Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
     20,
     20
   );
-  // bgCtx.fillText(
-  //   `HighScore: ${highScore} | Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
-  //   20,
-  //   20
-  // ); //! highscore doesn't seem to work on vercel
   particlesHandler();
 
   //* Incrementors + resets
@@ -189,7 +186,10 @@ const gameLoop = (timeStamp) => {
 const player = new Player();
 generateSnow();
 
-if (localStorage.getItem("highscore" === null)) {
+if (
+  localStorage.getItem("highscore" === null) ||
+  localStorage.getItem("highscore" === NaN)
+) {
   highScore = localStorage.setItem("highscore", 0);
 } else {
   highScore = localStorage.getItem("highscore");
