@@ -24,26 +24,8 @@ Welcome to my game project as part of SEI-30. You can view my pre-project work *
 3. Starting to understand how to use Git, to create backups and branches to better manage the production and testing of code.
 4. Code Samples:
 
-`lass Particle {
-  constructor() {
-    this.x = player.x;
-    this.y = player.y + player.height / 2;
-    this.size = Math.floor(Math.random() * 4) + 1;
-    this.speedY = Math.random() * 1;
-    this.color = `hsl(${hue}, 100%, 50%)`;
-  }
-  update() {
-    this.y += this.speedY;
-  }
-  draw() {
-    ctx.beginPath();
-    ctx.fillStyle = this.color;
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.fill();
-  }
-}
-
+**Function to loop through array with management of state and rendering**
+`
 const particlesHandler = () => {
   particlesArray.unshift(new Particle());
   for (let i = 0; i < particlesArray.length; i++) {
@@ -58,5 +40,61 @@ const particlesHandler = () => {
       particlesArray.pop(particlesArray[i]);
     }
   }
+};
+`
+
+**Code for generating objects randomly across defined points of my canvas via nested functions, loops and arrays**
+`// [ 0 1 2 3 4 5 6 7 8]
+// [ - - - - - X - - -] 5
+// [ - X - - - - - - -] 4
+// [ - - - X - - - - -] 3
+// [ - - - - - X - - -] 2
+// [ - - - - X - - - -] 1
+const bellXPos = [
+  SCREEN_X_MID - colWidth * 4,
+  SCREEN_X_MID - colWidth * 3,
+  SCREEN_X_MID - colWidth * 2,
+  SCREEN_X_MID - colWidth * 1,
+  SCREEN_X_MID,
+  SCREEN_X_MID + colWidth * 1,
+  SCREEN_X_MID + colWidth * 2,
+  SCREEN_X_MID + colWidth * 3,
+  SCREEN_X_MID + colWidth * 4,
+];
+
+let currCol = Math.floor(bellXPos.length / 2); //4, start at centre
+
+const randNum = (num, range) => {
+  let r = 0;
+  r = Math.round(Math.random() * (range - 1)) - Math.floor((range - 1) / 2);
+  return num + r;
+};
+
+const generateXArr = (start, arrLength, range) => {
+  let result = [];
+  result.push(start);
+  let curr = start;
+  let next = curr;
+
+  for (i = 0; i < arrLength - 1; i++) {
+    curr = next;
+    while (curr === next) {
+      next = randNum(start, range);
+    }
+    result.push(next);
+  }
+  return result;
+};
+
+const generateBell = (arr, posY, numBells) => {
+  let prevY = posY;
+  for (let i = 0; i < numBells; i++) {
+    let bell = new Bell(bellXPos[arr[i]], prevY);
+    prevY -= bellSpacing;
+    bellID += 1; //label each bell
+    bell.id = bellID;
+    bellArray.push(bell);
+  }
+  console.log("***BELLS CREATED***", bellArray);
 };
 `
