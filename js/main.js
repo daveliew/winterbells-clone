@@ -159,10 +159,15 @@ const gameLoop = (timeStamp) => {
   bgCtx.font = "16px Josefin Sans";
   bgCtx.fillStyle = "white";
   bgCtx.fillText(
-    `HighScore: ${highScore} | Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
+    ` Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
     20,
     20
   );
+  // bgCtx.fillText(
+  //   `HighScore: ${highScore} | Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
+  //   20,
+  //   20
+  // ); //! highscore doesn't work on vercel
   particlesHandler();
 
   //* Incrementors + resets
