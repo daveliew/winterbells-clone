@@ -8,7 +8,7 @@ Welcome to my game project as part of SEI-30. You can view my pre-project work *
 
 > Simple mechanics, a soothing snow-filled backdrop, and a personal challenge to beat your previous high score. What's not to like?
 
-**Credits:**
+### Credits: 
 - Winterbells: Ferry Halim
 - 2D Game Assets: @bevouliin (https://bevouliin.com)
 - "Bell, Counter, A.wav" by InspectorJ (www.jshaw.co.uk) of Freesound.org
@@ -18,11 +18,13 @@ Welcome to my game project as part of SEI-30. You can view my pre-project work *
   - Hunor Márton Borbély - https://www.youtube.com/channel/UCxhgW0Q5XLvIoXHAfQXg9oQ
 
 -----------------
-**Things I've learnt:**
+*** Things I've learnt: ***
 1. Better use of Arrays, Classes. Better understanding of HTML Canvas for animation.
 2. Organisation of code into smaller parts, and piecing them together with functions. Still trying to learn how professionals handle code testing and production, especially in groups of coders. 
 3. Starting to understand how to use Git, to create backups and branches to better manage the production and testing of code.
-4. Code Samples:
+
+-----------------
+### Code Samples:
 
 **Function to loop through array with management of state and rendering**
 ```JavaScript
@@ -44,6 +46,7 @@ const particlesHandler = () => {
 ```
 
 **Code for generating objects randomly across defined points of my canvas via nested functions, loops and arrays**
+
 *Example Output*
 ```
  [ 0 1 2 3 4 5 6 7 8]
