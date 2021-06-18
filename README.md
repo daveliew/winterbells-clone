@@ -45,13 +45,14 @@ const particlesHandler = () => {
 
 **Code for generating objects randomly across defined points of my canvas via nested functions, loops and arrays**
 *Example Output*
-[ 0 1 2 3 4 5 6 7 8]
+```
+ [ 0 1 2 3 4 5 6 7 8]
  [ - - - - - X - - -] 5
  [ - X - - - - - - -] 4
  [ - - - X - - - - -] 3
  [ - - - - - X - - -] 2
  [ - - - - X - - - -] 1
-
+```
 
 ```JavaScript
 const bellXPos = [
