@@ -49,8 +49,9 @@ const particlesHandler = () => {
 // [ - X - - - - - - -] 4
 // [ - - - X - - - - -] 3
 // [ - - - - - X - - -] 2
-// [ - - - - X - - - -] 1
-const bellXPos = [
+// [ - - - - X - - - -] 1`
+
+`const bellXPos = [
   SCREEN_X_MID - colWidth * 4,
   SCREEN_X_MID - colWidth * 3,
   SCREEN_X_MID - colWidth * 2,
