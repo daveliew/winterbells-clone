@@ -158,16 +158,16 @@ const gameLoop = (timeStamp) => {
   //* screen cosmetics
   bgCtx.font = "16px Josefin Sans";
   bgCtx.fillStyle = "white";
-  bgCtx.fillText(
-    ` Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
-    20,
-    20
-  );
   // bgCtx.fillText(
-  //   `HighScore: ${highScore} | Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
+  //   ` Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
   //   20,
   //   20
-  // ); //! highscore doesn't work on vercel
+  // );
+  bgCtx.fillText(
+    `HighScore: ${highScore} | Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
+    20,
+    20
+  ); //! highscore doesn't work on vercel
   particlesHandler();
 
   //* Incrementors + resets

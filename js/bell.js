@@ -155,7 +155,6 @@ const bellRender = (arr) => {
 //   ) {
 //     currX = Math.floor(Math.random() * bellXpos.length);
 //   }
-
 //   return currX;
 // };
 
