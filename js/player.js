@@ -38,10 +38,6 @@ class Player {
     this.velocityY *= 0.9;
   }
   draw() {
-    // ctx.beginPath();
-    // ctx.fillStyle = this.color;
-    // ctx.rect(this.x, this.y, this.width, this.height);
-    //ctx.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh)
     ctx.drawImage(
       playerImage,
       frameX * spriteWidth,

@@ -122,11 +122,10 @@ const bellRender = (arr) => {
     hasCollided(player, arr[i]);
     if (arr[i].collided) {
       player.bellsCollected += 1;
-      // floatingMessages.push(new Message(score, arr[i].x, arr[i].y, 30, "blue"));
     }
     if (arr[i].collided || arr[i].y > canvas.height - 100) {
-      arr.splice(i, 1);
       // remove bell from array to manage total #objects
+      arr.splice(i, 1);
     }
   }
 
@@ -144,28 +143,3 @@ const bellRender = (arr) => {
   crossedHeight = false; // reset trigger for bell translation
   return currCol;
 };
-
-//* Previous Generate Bell Algorithm
-// const randBellX = () => {
-//   prevX = currX;
-//   while (
-//     currX === prevX || //prevents a random bell from having same X as a previous bell
-//     currX - prevX <= -difficulty || //prevents a bell from being too far from a current bell
-//     currX - prevX >= difficulty
-//   ) {
-//     currX = Math.floor(Math.random() * bellXpos.length);
-//   }
-//   return currX;
-// };
-
-// const generateBell = (posY) => {
-//   let prevY = posY;
-//   while (bellArray.length < numBells) {
-//     let newX = randBellX();
-//     let bell = new Bell(bellXpos[newX], prevY);
-//     prevY -= bellSpacing;
-//     lowestBell = bell;
-//     bellArray.push(bell);
-//   }
-//   console.log("***BELLS CREATED***", bellArray);
-// };
