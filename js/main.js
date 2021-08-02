@@ -1,11 +1,4 @@
 /** @type {HTMLCanvasElement} */
-//! TO DO LIST
-//* unfinished business
-//? add bird to double bonus
-//? floating message score
-//? tune bellRender() --> translation causes bells to end up in same col?
-//? add viewport + fix bg image
-//? add pre-rendering for main character
 //////////////////
 //* ***DATA*** *//
 //////////////////
@@ -152,17 +145,12 @@ const gameLoop = (timeStamp) => {
   snowRender(snow.snowArray);
   if (gameFrame % framesPerSnow === 0) {
     generateSnow(); //only generate snow every 200 frames
-    // console.log("***BELLS STATUS***", bellArray);
   }
 
   //* screen cosmetics
   bgCtx.font = "16px Josefin Sans";
   bgCtx.fillStyle = "white";
-  // bgCtx.fillText(
-  //   ` Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
-  //   20,
-  //   20
-  // );
+
   bgCtx.fillText(
     `HighScore: ${highScore} | Score: ${score}  |  Boosts: ${boosts} | Bursts: ${bursts}`,
     20,
@@ -175,13 +163,6 @@ const gameLoop = (timeStamp) => {
   gameFrame++;
 
   requestAnimationFrame(gameLoop); // recursive game loop
-
-  //! TEST AREA
-  // console.log("player X pos and velocity", player.x, player.velocityX);
-  // console.log("player Y pos and velocity", player.y, player.velocityY);
-  // console.log("ground level: ",canvas.height - player.height);
-  // console.log("playerHeight", playerHeight, "highestHeight", highestHeight);
-  // console.log("FPS: ",fps);
 };
 
 ////////////////////////////////
@@ -214,12 +195,10 @@ if (playerActivated) {
 
   const h2Text =
     "Move mouse for left or right. Left Click to boost. Careful - there's a price!";
-  const h2TextWidth = ctx.measureText(h2Text).width;
   ctx.font = "16px Josefin Sans";
   ctx.fillStyle = "darkslategreen";
 
   const h3Text = "(P.S. Avoid the shiny things)";
-  const h3TextWidth = bgCtx.measureText(h3Text).width;
   bgCtx.font = "13px Josefin Sans";
   bgCtx.fillStyle = "darkslategrey";
 
